@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Daily View</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='calendar.css') }}">
+</head>
+<body>
+    <div class="dailyview">
+        <h2>{{ date }}</h2>
+        <a href="/day?days={{ days-1 }}">Previous Day</a>
+        <a href="/day?days={{ days+1 }}">Next Day</a>
+        {% if form_status == True %}
+        <ul>
+            {% for habit in habits %}
+            <li>
+                {% if habit.number_value %}
+                {{ habit.habit_name }}: {{ habit.number_value }} 
+                {% else %}
+                {% if habit.boolean_value is none %}
+                {{ habit.habit_name}}: Not done
+                {% else %}
+                {{ habit.habit_name }}: Done
+                {% endif %}
+                {% endif %}
+            </li>
+            {% endfor %}
+        </ul>
+        {% else %}
+        <ul>
+            <form action="/habit_status" method="POST">
+                {% for habit in habits %}
+                <li>
+                    {{ habit.habit_name }}
+                    <input type="hidden" name="track_value_{{ habit.id }}" value="{{ habit.track_number_value }}">
+                    <input type="hidden" name="habit_id_{{ habit.id }}" value="{{ habit.id }}">
+                    {% if habit.track_number_value %}
+                        {% if habit.habit_name == 'mood' %}
+                        <input type="number" class="input" name="number_{{ habit.id }}" placeholder="1-5 (1=bad 5=good)">
+                        {% else %}
+                        <input type="number" class="input" name="number_{{ habit.id }}">                     
+                        {% endif %}
+                    {% else %}
+                        <input type="checkbox" class="input" name="checkbox_{{ habit.id }}">
+                    {% endif %}
+                </li>
+                {% endfor %}
+                <input type="hidden" name="date" value="{{ date }}">
+                <input type="submit" class="button" value="Done">
+            </form>
+        </ul>
+        {% endif %}
+        <a href="/logout">Log out</a>
+    </div>
+</body>
+</html>

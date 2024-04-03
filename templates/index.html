@@ -2,7 +2,7 @@
 <html>
     <head>
         <meta charset="UTF-8">
-        <title>{% block title %}Home{%endblock%}</title>
+        <title>{% block title %}Home{% endblock %}</title>
         <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
     </head>
     <body>
@@ -11,6 +11,8 @@
         {% if session.username %}
         <p>logged in as {{ session.username }} </p>
         <a href="/logout">Log out</a>
+
+        
         {% else %}
         {% if notification %}
         <p id="notification" class="notification"> Error: {{ message }}</p>

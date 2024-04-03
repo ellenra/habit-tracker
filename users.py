@@ -21,7 +21,9 @@ def register(username, email, password):
         sql = text("INSERT INTO users (username, email, password) VALUES (:username, :email, :password)")
         db.session.execute(sql, {"username":username, "email":email, "password":hashed_password})
         db.session.commit()
+        user_id = db.session.execute(text("SELECT id FROM users WHERE username = :username"), {"username": username}).fetchone()[0]
         session["username"] = username
+        session["user_id"] = user_id
     except:
         return False
     return True
@@ -35,7 +37,11 @@ def login(username, password):
     if not check_password_hash(user[0], password):
         return False
     session["username"] = username
+    session["user_id"] = user[1]
     return True
 
 def logout():
     del session["username"]
+    del session["user_id"]
+
+
