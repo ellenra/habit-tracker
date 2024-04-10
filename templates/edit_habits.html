@@ -1,0 +1,28 @@
+{% extends "day.html" %}
+{% block content %}
+
+<h2>{{ date }}</h2>
+<form action="/habit_status" method="POST">
+    {% for habit in habits %}
+    <li>
+        {{ habit.habit_name }}
+        <input type="hidden" name="track_value_{{ habit.id }}" value="{{ habit.track_number_value }}">
+        <input type="hidden" name="habit_id_{{ habit.id }}" value="{{ habit.id }}">
+        {% if habit.track_number_value %}
+            {% if habit.habit_name == 'mood' %}
+            <input type="number" class="input" name="number_{{ habit.id }}" value="{{ habit.number_value }}" placeholder="1-5 (1=bad 5=good)">
+            {% else %}
+            <input type="number" class="input" name="number_{{ habit.id }}" value="{{ habit.number_value }}">                     
+            {% endif %}
+        {% else %}
+            <input type="checkbox" class="input" name="checkbox_{{ habit.id }}" {% if habit.boolean_value %} checked {% endif %}>
+        {% endif %}
+    </li>
+    {% endfor %}
+    <input type="hidden" name="day" value="{{ days }}">
+    <input type="hidden" name="date" value="{{ date }}">
+    <input type="hidden" name="edit_form" value="True">
+    <input type="submit" class="button" value="Done">
+</form>
+<a href="/day">Return</a>
+{% endblock %}

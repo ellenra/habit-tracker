@@ -15,7 +15,6 @@ CREATE TABLE Habits (
 CREATE TABLE UsersHabits (
     id SERIAL PRIMARY KEY,
     user_id INTEGER REFERENCES Users(id),
-    habit_id INTEGER REFERENCES Habits(id),
     habit_name TEXT,
     date DATE,
     track_number_value BOOLEAN,

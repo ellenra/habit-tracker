@@ -1,10 +1,19 @@
 body {
+    display: flex;
     justify-content: center;
     align-items: center;
+    background-color: rgb(248, 234, 213);
+    height: 100vh;
 }
 
-.dailyview {
-    padding: 10px;
+.container {
+    background-color: rgb(255, 254, 244);
+    padding: 50px;
+    padding-left: 100px;
+    padding-right: 100px;
+    border-radius: 12px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+    text-align: center;
 }
 
 .input {
@@ -17,6 +26,7 @@ body {
 
 ul {
     list-style-type: none;
+    text-align: left;
 }
 
 .button {
@@ -25,9 +35,27 @@ ul {
     border: none;
     border-radius: 4px;
     border: 1px solid #ccc;
+    background-color: rgb(228, 236, 204);
 }
 
 .button:hover {
-    background-color: #457fa0;
+    background-color: #dabbda;
+}
+
+.links {
+    text-align: center;
+}
+
+a {
+    color: black;
+    margin-right: 10px;
+}
+
+a:hover {
+    color: rgb(250, 182, 193);
+}
+
+h2 {
+    font-size: 1.6em;
 }
 

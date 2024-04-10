@@ -8,12 +8,6 @@
     <body>
     <main>
         {% block content %}
-        {% if session.username %}
-        <p>logged in as {{ session.username }} </p>
-        <a href="/logout">Log out</a>
-
-        
-        {% else %}
         {% if notification %}
         <p id="notification" class="notification"> Error: {{ message }}</p>
         {% endif %}
@@ -26,8 +20,9 @@
                 <input type="password" class="input" name="password"></p>
                 <input type="submit" class="button" value="Log in">
             </form>
+            </br>
+            Don't have an account? <a href="/register">Register here</a>
         </div>
-        {% endif %}
         {% endblock %}
     </main>
     <script>

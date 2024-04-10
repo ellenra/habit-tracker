@@ -1,7 +1,6 @@
-import os
 from db import db
 import re
-from flask import request, session
+from flask import session
 from sqlalchemy.sql import text
 from werkzeug.security import check_password_hash, generate_password_hash
 

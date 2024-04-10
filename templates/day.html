@@ -6,10 +6,13 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='calendar.css') }}">
 </head>
 <body>
-    <div class="dailyview">
-        <h2>{{ date }}</h2>
-        <a href="/day?days={{ days-1 }}">Previous Day</a>
-        <a href="/day?days={{ days+1 }}">Next Day</a>
+    <div class="container">
+        {% block content %}
+        <div class="links">
+            <h2>{{ date }}</h2>
+            <a href="/day?days={{ days-1 }}">Previous Day</a>
+            <a href="/day?days={{ days+1 }}">Next Day</a>
+        </div>
         {% if form_status == True %}
         <ul>
             {% for habit in habits %}
@@ -17,15 +20,18 @@
                 {% if habit.number_value %}
                 {{ habit.habit_name }}: {{ habit.number_value }} 
                 {% else %}
-                {% if habit.boolean_value is none %}
-                {{ habit.habit_name}}: Not done
+                {% if habit.boolean_value %}
+                {{ habit.habit_name}}: Done
                 {% else %}
-                {{ habit.habit_name }}: Done
+                {{ habit.habit_name }}: Not done
                 {% endif %}
                 {% endif %}
             </li>
             {% endfor %}
         </ul>
+        <a href="/edit_habits?date={{ date }}&days={{ days }}">Edit</a>
+        <br/>
+        <br/>
         {% else %}
         <ul>
             <form action="/habit_status" method="POST">
@@ -41,15 +47,19 @@
                         <input type="number" class="input" name="number_{{ habit.id }}">                     
                         {% endif %}
                     {% else %}
-                        <input type="checkbox" class="input" name="checkbox_{{ habit.id }}">
+                        <input type="checkbox" class="input" name="checkbox_{{ habit.id }}" value="true">
                     {% endif %}
                 </li>
                 {% endfor %}
+                <input type="hidden" name="day" value="{{ days }}">
                 <input type="hidden" name="date" value="{{ date }}">
                 <input type="submit" class="button" value="Done">
             </form>
         </ul>
         {% endif %}
+        {% endblock %}
+        <a href="/habits">Change habits you want to track</a>
+        <br/>
         <a href="/logout">Log out</a>
     </div>
 </body>
