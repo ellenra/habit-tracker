@@ -17,24 +17,46 @@
         <ul>
             {% for habit in habits %}
             <li>
-                {% if habit.number_value %}
-                {{ habit.habit_name }}: {{ habit.number_value }} 
+                {% if habit.habit_name == 'mood' %}
+                    <span class="mood">
+                        {{ habit.habit_name }}:
+                        {% if habit.number_value == 1 %}
+                            <span class="sad">😞</span>
+                        {% elif habit.number_value == 2 %}
+                            <span class="confused">😕</span>
+                        {% elif habit.number_value == 3 %}
+                            <span class="calm">😌</span>
+                        {% elif habit.number_value == 4 %}
+                            <span class="happy">😊</span>
+                        {% else %}
+                            <span class="excited">😄</span>
+                        {% endif %}
+                    </span>
                 {% else %}
-                {% if habit.boolean_value %}
-                {{ habit.habit_name}}: Done
-                {% else %}
-                {{ habit.habit_name }}: Not done
-                {% endif %}
+                    {% if habit.number_value %}
+                        {% if habit.habit_name =='sleep' %}
+                        {{ habit.habit_name }}: {{ habit.number_value }}h
+                        {% else %}
+                        {{ habit.habit_name }}: {{ habit.number_value }} 
+                        {% endif %}
+                    {% else %}
+                        {% if habit.boolean_value %}
+                            {{ habit.habit_name }}: ✔️
+                            <span class="checked-icon"></span>
+                        {% else %}
+                            {{ habit.habit_name }}: ✗
+                            <span class="unchecked-icon"></span>
+                        {% endif %}
+                    {% endif %}
                 {% endif %}
             </li>
             {% endfor %}
         </ul>
         <a href="/edit_habits?date={{ date }}&days={{ days }}">Edit</a>
         <br/>
-        <br/>
         {% else %}
-        <ul>
             <form action="/habit_status" method="POST">
+                <br/>
                 {% for habit in habits %}
                 <li>
                     {{ habit.habit_name }}
@@ -55,9 +77,9 @@
                 <input type="hidden" name="date" value="{{ date }}">
                 <input type="submit" class="button" value="Done">
             </form>
-        </ul>
         {% endif %}
         {% endblock %}
+        </br>
         <a href="/habits">Change habits you want to track</a>
         <br/>
         <a href="/logout">Log out</a>

@@ -3,6 +3,7 @@
 
 <h2>{{ date }}</h2>
 <form action="/habit_status" method="POST">
+    <ul>
     {% for habit in habits %}
     <li>
         {{ habit.habit_name }}
@@ -19,6 +20,7 @@
         {% endif %}
     </li>
     {% endfor %}
+    </ul>
     <input type="hidden" name="day" value="{{ days }}">
     <input type="hidden" name="date" value="{{ date }}">
     <input type="hidden" name="edit_form" value="True">
