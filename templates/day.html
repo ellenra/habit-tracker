@@ -12,24 +12,25 @@
             <h2>{{ date }}</h2>
             <a href="/day?days={{ days-1 }}">Previous Day</a>
             <a href="/day?days={{ days+1 }}">Next Day</a>
+            <a href="/month?date={{ date }}">Monthly View</a>
         </div>
         {% if form_status == True %}
         <ul>
             {% for habit in habits %}
             <li>
                 {% if habit.habit_name == 'mood' %}
-                    <span class="mood">
+                    <span>
                         {{ habit.habit_name }}:
                         {% if habit.number_value == 1 %}
-                            <span class="sad">😞</span>
+                            <span>😞</span>
                         {% elif habit.number_value == 2 %}
-                            <span class="confused">😕</span>
+                            <span>😕</span>
                         {% elif habit.number_value == 3 %}
-                            <span class="calm">😌</span>
+                            <span>😌</span>
                         {% elif habit.number_value == 4 %}
-                            <span class="happy">😊</span>
+                            <span>😊</span>
                         {% else %}
-                            <span class="excited">😄</span>
+                            <span>😄</span>
                         {% endif %}
                     </span>
                 {% else %}

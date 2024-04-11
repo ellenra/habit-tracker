@@ -2,6 +2,7 @@ from app import app
 from db import db
 from flask import render_template, request, redirect, session
 from datetime import datetime, timedelta
+import calendar
 import users
 import habits
 
@@ -78,6 +79,7 @@ def habit_status():
         date_for_database = date_object.strftime("%Y%m%d")
         user_habits = habits.getdata(user_id, date_for_database)
         edit_status = request.form.get("edit_habits")
+        info = None
         for habit in user_habits:
             habit_id = habit.id
             track_number_value = request.form.get("track_value_" + str(habit_id))
@@ -87,7 +89,11 @@ def habit_status():
             else: 
                 value = request.form.get('checkbox_' + str(habit_id))
                 if value or edit_status:
-                    habits.update_habit_boolean_value(habit_id)
+                    info = True
+                    habits.update_habit_boolean_value(habit_id, info)
+                else:
+                    info = False
+                    habits.update_habit_boolean_value(habit_id, info)
         current_day_for_day_route = int(request.form.get("day", 0))
         return redirect(f"/day?days={current_day_for_day_route}")
 
@@ -101,4 +107,34 @@ def edit_habits():
     current_day_for_day_route = int(request.args.get('days', 0))
     return render_template("edit_habits.html", habits=user_habits, date=date, days=current_day_for_day_route)
 
+@app.route("/month", methods=["GET"])
+def month():
+    if request.method == "GET":
+        user_id = session.get('user_id')
+        get_date = request.args.get('date')
+        date = datetime.strptime(get_date, "%A, %d.%m.%Y")
+        month_date = date.strftime("%B, %Y")
+        date_for_database = date.strftime("%Y%m%d")
+        _, days_in_month = calendar.monthrange(date.year, date.month)
+        first_day = date.replace(day=1)
+        last_day = first_day + timedelta(days=days_in_month - 1)
+        current_day = first_day
+        habits_data = []
+        while current_day <= last_day:
+            date_for_database = current_day.strftime("%Y%m%d")
+            user_habits = habits.getdata(user_id, date_for_database)
+            habits_data.append(user_habits)
+            current_day += timedelta(days=1)
+        users_habits = habits.gethabits(user_id)
+        first_day_in_database = first_day.date()
+        last_day_in_database = last_day.date()
         
+        habit_data_dictionary = {}
+        for day in habits_data:
+            for data in day:
+                key = (data[2], data[3].day)
+                if key not in habit_data_dictionary:
+                    habit_data_dictionary[key] = []
+                habit_data_dictionary[key].append(data)
+        
+        return render_template("month.html", month=month_date, habits=users_habits, habit_data=habit_data_dictionary, first_day=first_day_in_database, last_day=last_day_in_database)

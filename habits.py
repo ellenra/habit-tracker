@@ -76,12 +76,14 @@ def update_habit_number_value(id, value):
     db.session.execute(sql_update_status, {"id":id})
     db.session.commit()
     
-def update_habit_boolean_value(id):
+def update_habit_boolean_value(id, info):
     sql_get_value = text("SELECT boolean_value FROM Usershabits WHERE id=:id")
     result = db.session.execute(sql_get_value, {"id": id})
     value = result.fetchone()[0]
-    
-    new_value = not value if value is not None else True
+    if info == True:
+        new_value = not value if value is not None else True
+    else:
+        new_value = False
     sql_update = text("UPDATE Usershabits SET boolean_value=:new_value WHERE id=:id")
     db.session.execute(sql_update, {"new_value":new_value, "id":id})
     sql_update_status = text("UPDATE Usershabits SET form_submitted = TRUE WHERE id=:id")
