@@ -6,6 +6,9 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='calendar.css') }}">
 </head>
 <body>
+    <div class="navigation-bar">
+        <a href="/challenges">Challenges</a>
+    </div>
     <div class="container">
         {% block content %}
         <div class="links">
@@ -84,6 +87,40 @@
         <a href="/habits">Change habits you want to track</a>
         <br/>
         <a href="/logout">Log out</a>
+    </div>
+    <div class="container">
+        <h2>Challenges!</h2>
+        {% for challenge in challenges %}
+        <li>
+            <ul>
+                <h3>{{ challenge[1] }}</h3>
+            </ul>
+             <ul>
+                Goal: {{ challenge[3] }} {{ challenge[4] }}
+            </ul>
+            <ul>
+                Done:
+                {% if challenge[0] not in challenge_statuses|map(attribute=0) %}
+                    <form action="/challenge_status" method="POST">
+                        <input type="hidden" name="date" value="{{ date }}">
+                        <input type="hidden" name="day" value="{{ days }}">
+                        <input type="checkbox" class="input" name="challenge_id" value="{{ challenge.id }}" onchange="this.form.submit()">
+                    </form>
+                {% else %}
+                    {% for status in challenge_statuses %}
+                    {% if status[0] == challenge[0] %}
+                        <form action="/challenge_status" method="POST">
+                            <input type="hidden" name="date" value="{{ date }}">
+                            <input type="hidden" name="day" value="{{ days }}">
+                            <input type="hidden" name="challenge_id" value="{{ challenge.id }}">
+                            <input type="checkbox" class="input" name="completed" value="true" {% if status[1] %} checked {% endif %} onchange="this.form.submit()">
+                        </form>
+                    {% endif %}
+                    {% endfor %}
+                {% endif %}
+            </ul>
+        </li>
+        {% endfor %}
     </div>
 </body>
 </html>

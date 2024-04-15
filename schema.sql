@@ -22,3 +22,32 @@ CREATE TABLE UsersHabits (
     boolean_value BOOLEAN,
     form_submitted BOOLEAN
 );
+
+CREATE TABLE Challenges (
+    id SERIAL PRIMARY KEY,
+    title TEXT,
+    description TEXT,
+    goal TEXT,
+    goal_frequency TEXT,
+    duration TEXT,
+    start_date DATE,
+    end_date DATE,
+    color TEXT,
+    creator_id INTEGER REFERENCES Users(id)
+);
+
+CREATE TABLE UsersChallenges (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES Users(id),
+    challenge_id INTEGER REFERENCES Challenges(id),
+    joined BOOLEAN,
+    start_date DATE
+);
+
+CREATE TABLE UsersChallengeLogs (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES Users(id),
+    challenge_id INTEGER REFERENCES Challenges(id),
+    date DATE,
+    completed BOOLEAN
+)

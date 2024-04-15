@@ -1,0 +1,149 @@
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgb(248, 234, 213);
+    min-height: 100vh;
+}
+
+.container {
+    background-color: rgb(255, 254, 244);
+    padding: 50px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    border-radius: 12px;
+    margin: 20px;
+    width: 90%;
+}
+
+.challenges {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.navigation-bar {
+    position: fixed;
+    top: 20px;
+    width: 100%;
+    padding: 30px;
+}
+
+.navigation-bar a {
+    color: black;
+    margin: 0 10px;
+    text-decoration: none;
+    font-size: larger;
+    padding-left: 40px;
+}
+
+.challenge {
+    width: 300px;
+    height: 200px;
+    border-radius: 12px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    text-align: center;
+    font-size: 17px;
+    font-weight: 400;
+    margin: 10px;
+    overflow: hidden;
+    padding: 20px;
+}
+
+.challenge-button {
+    padding: 10px;
+    border: none;
+    border-radius: 12px;
+    border: 1px solid black;
+}
+
+.challenge-button:hover {
+    background-color: rgb(241, 225, 241);
+}
+
+.button {
+    padding: 10px;
+    margin: 8px 0;
+    border: none;
+    border-radius: 12px;
+    border: 1px solid #ccc;
+    background-color: rgb(228, 236, 204);
+}
+
+.button:hover {
+    background-color: #dabbda;
+}
+
+.input {
+    padding: 5px;
+    margin: 8px;
+    box-sizing: border-box;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    width: 100%;
+}
+
+.description-input {
+    height: 80px;
+}
+
+.date-input {
+    width: auto;
+}
+
+.colors {
+    display: flex;
+    justify-content: center;
+}
+
+.color {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    margin: 0 10px;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.color:hover {
+    border: 1px solid rgb(155, 129, 91);
+}
+
+.pink {
+    background-color: #fde2ec;
+}
+
+.yellow {
+    background-color: #f8f5c7;
+}
+
+.green {
+    background-color: #d2f5d3;
+}
+
+.blue {
+    background-color: #d3eefc;
+}
+
+.purple {
+    background-color: #dfd5f1;
+}
+
+.goal {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.goal-value,
+.goal-unit {
+    width: 28.5%;
+}
+
+input[type="radio"] {
+    display: none;
+}
+
+input[type="radio"]:checked + .color {
+    border: 2px solid rgb(155, 129, 91);
+}
