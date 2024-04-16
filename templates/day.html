@@ -3,12 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <title>Daily View</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='calendar.css') }}">
+    <link rel="stylesheet" href="/static/main.css">
+    <link rel="stylesheet" href="/static/calendar.css">
 </head>
 <body>
-    <div class="navigation-bar">
-        <a href="/challenges">Challenges</a>
-    </div>
+    <nav class="sidebar">
+        <a href="/challenges">Join Challenges</a>
+        <a href="/logout">Log out</a><br>
+    </nav>
+    <br />
+    <br />
     <div class="container">
         {% block content %}
         <div class="links">
@@ -69,6 +73,8 @@
                     {% if habit.track_number_value %}
                         {% if habit.habit_name == 'mood' %}
                         <input type="number" class="input" name="number_{{ habit.id }}" placeholder="1-5 (1=bad 5=good)">
+                        {% elif habit.habit_name == 'sleep' %}
+                        <input type="number" class="input" name="number_{{ habit.id }}" placeholder="h">
                         {% else %}
                         <input type="number" class="input" name="number_{{ habit.id }}">                     
                         {% endif %}
@@ -85,42 +91,41 @@
         {% endblock %}
         </br>
         <a href="/habits">Change habits you want to track</a>
-        <br/>
-        <a href="/logout">Log out</a>
     </div>
-    <div class="container">
-        <h2>Challenges!</h2>
-        {% for challenge in challenges %}
-        <li>
-            <ul>
-                <h3>{{ challenge[1] }}</h3>
-            </ul>
-             <ul>
-                Goal: {{ challenge[3] }} {{ challenge[4] }}
-            </ul>
-            <ul>
-                Done:
-                {% if challenge[0] not in challenge_statuses|map(attribute=0) %}
-                    <form action="/challenge_status" method="POST">
-                        <input type="hidden" name="date" value="{{ date }}">
-                        <input type="hidden" name="day" value="{{ days }}">
-                        <input type="checkbox" class="input" name="challenge_id" value="{{ challenge.id }}" onchange="this.form.submit()">
-                    </form>
-                {% else %}
-                    {% for status in challenge_statuses %}
-                    {% if status[0] == challenge[0] %}
+    {% if challenges %}
+        <div class="container">
+            <h2>Challenges!</h2>
+            {% for challenge in challenges %}
+            <li>
+                <ul>
+                    <h3>{{ challenge[1] }}</h3>
+                </ul>
+                <ul>
+                    Goal: {{ challenge[3] }} {{ challenge[4] }}
+                </ul>
+                <ul>
+                    {% if challenge[0] not in challenge_statuses|map(attribute=0) %}
                         <form action="/challenge_status" method="POST">
                             <input type="hidden" name="date" value="{{ date }}">
                             <input type="hidden" name="day" value="{{ days }}">
-                            <input type="hidden" name="challenge_id" value="{{ challenge.id }}">
-                            <input type="checkbox" class="input" name="completed" value="true" {% if status[1] %} checked {% endif %} onchange="this.form.submit()">
+                            Done: <input type="checkbox" class="input" name="challenge_id" value="{{ challenge.id }}" onchange="this.form.submit()">
                         </form>
+                    {% else %}
+                        {% for status in challenge_statuses %}
+                        {% if status[0] == challenge[0] %}
+                            <form action="/challenge_status" method="POST">
+                                <input type="hidden" name="date" value="{{ date }}">
+                                <input type="hidden" name="day" value="{{ days }}">
+                                <input type="hidden" name="challenge_id" value="{{ challenge.id }}">
+                                Done: <input type="checkbox" class="input" name="completed" value="true" {% if status[1] %} checked {% endif %} onchange="this.form.submit()">
+                            </form>
+                        {% endif %}
+                        {% endfor %}
                     {% endif %}
-                    {% endfor %}
-                {% endif %}
-            </ul>
-        </li>
-        {% endfor %}
-    </div>
+                </ul>
+            </li>
+            {% endfor %}
+        </div>
+    {% endif %}
 </body>
 </html>

@@ -45,11 +45,11 @@ def getdata(user_id, date):
     data = result.fetchall()
     return data
 
-def get_form_status(date):
-    sql = text("SELECT * FROM Usershabits WHERE date=:date AND form_submitted = TRUE")
-    result = db.session.execute(sql, {"date":date})
-    status = result.fetchone()
-    if status:
+def get_form_status(date, user_id):
+    sql = text("SELECT * FROM Usershabits WHERE date=:date AND form_submitted = TRUE AND user_id=:user_id")
+    result = db.session.execute(sql, {"date":date, "user_id":user_id})
+    data = result.fetchone()
+    if data:
         return True
     return None
 

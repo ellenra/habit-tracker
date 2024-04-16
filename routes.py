@@ -1,6 +1,6 @@
 from app import app
 from db import db
-from flask import render_template, request, redirect, session
+from flask import render_template, request, redirect, session, flash
 from datetime import datetime, timedelta, date
 import calendar
 import users
@@ -38,22 +38,23 @@ def logout():
     users.logout()
     return redirect("/")
 
-@app.route("/day",)
+@app.route("/day")
 def day():
     user_id = session.get("user_id")
     change_day = int(request.args.get("days", 0))
     date = (datetime.now() + timedelta(days=change_day)).strftime("%A, %d.%m.%Y")
     date_for_database = (datetime.now() + timedelta(days=change_day)).strftime("%Y-%m-%d")
     habits.add_habits_for_the_day(user_id, date_for_database)
-    user_habits = habits.getdata(user_id, date_for_database)
-    form_status = habits.get_form_status(date_for_database)
     
+    user_habits = habits.getdata(user_id, date_for_database)
+    form_status = habits.get_form_status(date_for_database, user_id)
+
     users_challenges = challenges.get_user_challenges(user_id)
     all_challenges = challenges.get_challenges(date_for_database)
     users_challenges_data = [challenge for challenge in all_challenges if challenge[0] in [id[0] for id in users_challenges]]
     user_challenge_statuses = challenges.get_user_challenge_data_for_day(user_id, date_for_database)
-    print("STATUSS", user_challenge_statuses)
-    return render_template("day.html", date=date, habits=user_habits, days=change_day, form_status=form_status, challenges=users_challenges_data, challenge_statuses=user_challenge_statuses)
+    return render_template("day.html", date=date, habits=user_habits, days=change_day, form_status=form_status,
+                           challenges=users_challenges_data, challenge_statuses=user_challenge_statuses)
 
 @app.route("/habits", methods=["GET", "POST"])
 def manage_habits():

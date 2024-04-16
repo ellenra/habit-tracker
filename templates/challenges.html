@@ -3,94 +3,93 @@
 <head>
     <meta charset="UTF-8">
     <title>Challenges</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='challenges.css') }}">
+    <link rel="stylesheet" href="/static/main.css">
+    <link rel="stylesheet" href="/static/challenges.css">
 </head>
 <body>
-    <main>
-        <div class="navigation-bar">
-            <a href="/">Home</a>
-        </div>
-        <div id="listOfChallenges" class="container" style="display: block;">
-            <h2>Join challenges!<h2>
-            <div class="challenges">
-                {% for challenge in challenges %}
-                <div class="challenge" style="background-color: {{ challenge.color }};">
-                    <h3>{{ challenge.title }}</h3>
-                    <p/>
-                    <p>{{ challenge.description}}</p>
-                    <p/>
-                    <p>{{ challenge.start_date }} - {{ challenge.end_date }}</p>
-                    <p/>
-                    {% if challenge in user_joined %}
-                    <form action="/leave_challenge" method="POST">
-                        <input type="hidden" name="challenge_id" value="{{ challenge.id }}">
-                        <button type="submit" class="challenge-button joined" onmouseover="this.innerHTML = 'Leave Challenge'" onmouseout="this.innerHTML = 'Joined!'">Joined!</button>
-                    </form>  
-                    {% else %}
-                    <form action="/join_challenge" method="POST">
-                        <input type="hidden" name="challenge_id" value="{{ challenge.id }}">
-                        <button type="submit" class="challenge-button">Join Challenge!</button>
-                    </form>    
-                    {% endif %}            
-                </div>
-                {% endfor %}
+    <nav class="sidebar">
+        <a href="/">Home</a>
+        <button class="sidebar-button" id="formButton" onClick="showForm()">Create Challenge</button>
+    </nav>
+    <div id="listOfChallenges" class="container" style="display: block;">
+        <h2>Join challenges!<h2>
+        <div class="challenges">
+            {% for challenge in challenges %}
+            <div class="challenge" style="background-color: {{ challenge.color }};">
+                <h3>{{ challenge.title }}</h3>
+                <p/>
+                <p>{{ challenge.description}}</p>
+                <p/>
+                <p>{{ challenge.start_date }} - {{ challenge.end_date }}</p>
+                <p/>
+                {% if challenge in user_joined %}
+                <form action="/leave_challenge" method="POST">
+                    <input type="hidden" name="challenge_id" value="{{ challenge.id }}">
+                    <button type="submit" class="challenge-button joined" onmouseover="this.innerHTML = 'Leave Challenge'" onmouseout="this.innerHTML = 'Joined!'">Joined!</button>
+                </form>  
+                {% else %}
+                <form action="/join_challenge" method="POST">
+                    <input type="hidden" name="challenge_id" value="{{ challenge.id }}">
+                    <button type="submit" class="challenge-button">Join Challenge!</button>
+                </form>    
+                {% endif %}            
             </div>
+            {% endfor %}
         </div>
-        <button class="button" id="formButton" onClick="showForm()">Create Challenge</button>
-        <div id="challengeForm" class="container" style="display: none;">
-            <form action="/challenges" method="POST">
-                Create challenge!
-                <p>Title:<br>
-                <input type="text" class="input" name="title"></p>
-                <p>Description:<br>
-                <textarea type="text" class="input description-input" name="description"></textarea></p>
-                <p>Goal:</p>
-                <div>
-                    <input type="text" class="input" name="goal" placeholder="(e.g. 10,000 steps, read 10 pages, no added sugar) ">
-                    <select class="input" name="goal_frequency">
-                        <option value="day">daily</option>
-                        <option value="week">weekly</option>
-                        <option value="month">monthly</option>
-                    </select>
-                </div>
-                <p>Challenge duration:<br>
-                    <select class="input" name="duration">
-                        <option value="1">one week</option>
-                        <option value="2">two weeks</option>
-                        <option value="3">three weeks</option>
-                        <option value="4">one month</option>
-                        <option value="5">two months</option>
-                        <option value="6">three months</option>
-                        <option value="7">four months</option>
-                        <option value="8">six months</option>
-                        <option value="9">a year</option>
-                    </select></p>
-                <p>Start date:<br>
-                <input type="date" class="input date-input" name="start_date"></p>
-                <p>End date:<br>
-                <input type="date" class="input date-input" name="end_date"></p>
-                <p>Color:<br>
-                    <div class="colors">
-                        <input type="radio" name="color" id="pink" value="#fde2ec">
-                        <label class="color pink" for="pink"></label>
+    </div>
+    <div id="challengeForm" class="container" style="display: none;">
+        <form action="/challenges" method="POST">
+            Create challenge!
+            <p>Title:<br>
+            <input type="text" class="input" name="title"></p>
+            <p>Description:<br>
+            <textarea type="text" class="input description-input" name="description"></textarea></p>
+            <p>Goal:</p>
+            <div>
+                <input type="text" class="input" name="goal" placeholder="(e.g. 10,000 steps, read 10 pages, no added sugar) ">
+                <select class="input" name="goal_frequency">
+                    <option value="day">daily</option>
+                    <option value="week">weekly</option>
+                    <option value="month">monthly</option>
+                </select>
+            </div>
+            <p>Challenge duration:<br>
+                <select class="input" name="duration">
+                    <option value="1">one week</option>
+                    <option value="2">two weeks</option>
+                    <option value="3">three weeks</option>
+                    <option value="4">one month</option>
+                    <option value="5">two months</option>
+                    <option value="6">three months</option>
+                    <option value="7">four months</option>
+                    <option value="8">six months</option>
+                    <option value="9">a year</option>
+                </select></p>
+            <p>Start date:<br>
+            <input type="date" class="input date-input" name="start_date"></p>
+            <p>End date:<br>
+            <input type="date" class="input date-input" name="end_date"></p>
+            <p>Color:<br>
+                <div class="colors">
+                    <input type="radio" name="color" id="pink" value="#fde2ec">
+                    <label class="color pink" for="pink"></label>
 
-                        <input type="radio" name="color" id="yellow" value="#f8f5c7">
-                        <label class="color yellow" for="yellow"></label>
+                    <input type="radio" name="color" id="yellow" value="#f8f5c7">
+                    <label class="color yellow" for="yellow"></label>
 
-                        <input type="radio" name="color" id="green" value="#d2f5d3">
-                        <label class="color green" for="green"></label>
+                    <input type="radio" name="color" id="green" value="#d2f5d3">
+                    <label class="color green" for="green"></label>
 
-                        <input type="radio" name="color" id="blue" value="#d3eefc">
-                        <label class="color blue" for="blue"></label>
+                    <input type="radio" name="color" id="blue" value="#d3eefc">
+                    <label class="color blue" for="blue"></label>
 
-                        <input type="radio" name="color" id="purple" value="#dfd5f1">
-                        <label class="color purple" for="purple"></label>
-                    </div></p>
-                <input type="submit" class="button" value="Create">
-            </form>
-            <button class="button" id="closeFormButton" onClick="closeForm()" style="display: none;">Return</button>
-        </div>
-    </main>
+                    <input type="radio" name="color" id="purple" value="#dfd5f1">
+                    <label class="color purple" for="purple"></label>
+                </div></p>
+            <input type="submit" class="button" value="Create">
+        </form>
+        <button class="button" id="closeFormButton" onClick="closeForm()" style="display: none;">Return</button>
+    </div>
     <script>
         function showForm() {
             var form = document.getElementById("challengeForm");

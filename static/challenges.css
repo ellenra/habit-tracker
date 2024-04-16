@@ -1,40 +1,7 @@
-body {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: rgb(248, 234, 213);
-    min-height: 100vh;
-}
-
-.container {
-    background-color: rgb(255, 254, 244);
-    padding: 50px;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
-    text-align: center;
-    border-radius: 12px;
-    margin: 20px;
-    width: 90%;
-}
-
 .challenges {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-}
-
-.navigation-bar {
-    position: fixed;
-    top: 20px;
-    width: 100%;
-    padding: 30px;
-}
-
-.navigation-bar a {
-    color: black;
-    margin: 0 10px;
-    text-decoration: none;
-    font-size: larger;
-    padding-left: 40px;
 }
 
 .challenge {
