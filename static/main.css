@@ -2,13 +2,13 @@ body {
     display: flex;
     justify-content: flex-start;
     align-items: center;
-    background-color: #d9d7e9;
+    background-color: #eae9f1;
     min-height: 100vh;
     flex-direction: column;
 }
 
 .container {
-    background-color: #edf2f4;
+    background-color: #f8f8f8;
     padding: 50px;
     border-radius: 12px;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
@@ -16,6 +16,45 @@ body {
     width: 40%;
     max-width: 800px;
     margin: 20px;
+}
+
+.button {
+    padding: 10px;
+    margin: 8px 0;
+    border: none;
+    border-radius: 12px;
+    border: 1px solid #ccc;
+    background-color: rgb(228, 236, 204);
+}
+
+.button:hover {
+    background-color: #dabbda;
+}
+
+.input {
+    padding: 5px;
+    margin: 8px;
+    box-sizing: border-box;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: white;
+}
+
+ul {
+    list-style-type: none;
+    text-align: left;
+    padding: 0;
+    margin-top: 25px;
+    margin-bottom: 25px;
+
+}
+
+li {
+    list-style-type: none;
+    width: 100%;
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
+    text-align: center;
 }
 
 .sidebar {
@@ -58,4 +97,12 @@ a:hover,
     background-color: transparent;
     cursor: pointer;
     font-family: inherit;
+}
+
+.bad-input {
+    background-color: #fad3d3;
+}
+
+.errorNotification {
+    color: red;
 }

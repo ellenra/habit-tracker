@@ -8,10 +8,10 @@
     <body>
     <main>
         {% block content %}
-        {% if notification %}
-        <p id="notification" class="notification"> Error: {{ message }}</p>
-        {% endif %}
         <div class="container">
+            {% if notification %}
+                <p id="notification" class="notification">{{ message }}</p>
+            {% endif %}
             <h2>Log in</h2>
             <form action="/login" method="POST">
                 <p>Username:<br>

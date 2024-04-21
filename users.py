@@ -6,14 +6,14 @@ from werkzeug.security import check_password_hash, generate_password_hash
 
 def register(username, email, password):
     if not username or not email or not password:
-        return False
-    if len(password) < 6:
-        return False
+        return "Please fill in all fields!"
+    if len(password) < 8:
+        return "Password must be longer!"
     if not re.match(r"[^@]+@[^@]+\.[^@]+", email):
-        return False
+        return "Invalid email format!"
     username_exists = db.session.execute(text("SELECT * FROM users WHERE username = :username"), {"username": username}).fetchone()
     if username_exists:
-        return False
+        return "Username already exists!"
     hashed_password = generate_password_hash(password)
     try:
         hashed_password = generate_password_hash(password)
@@ -24,7 +24,7 @@ def register(username, email, password):
         session["username"] = username
         session["user_id"] = user_id
     except:
-        return False
+        return "Error in registration!"
     return True
 
 def login(username, password):

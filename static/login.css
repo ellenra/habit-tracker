@@ -5,6 +5,10 @@ body {
     height: 100vh;
 }
 .container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
     position: absolute;
     transform: translate(-50%, -50%);
     text-align: center;
@@ -53,6 +57,7 @@ a:hover {
     padding: 10px 20px;
     border-radius: 5px;
     margin-bottom: 10px;
+    width: 50%;
 }
 
 .calendar {
@@ -103,6 +108,10 @@ a:hover {
     width: 60%;
 }
 
+.bad-input {
+    background-color: #fad3d3;
+}
 
-
-
+.errorNotification {
+    color: red;
+}

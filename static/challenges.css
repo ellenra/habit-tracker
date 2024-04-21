@@ -28,28 +28,6 @@
     background-color: rgb(241, 225, 241);
 }
 
-.button {
-    padding: 10px;
-    margin: 8px 0;
-    border: none;
-    border-radius: 12px;
-    border: 1px solid #ccc;
-    background-color: rgb(228, 236, 204);
-}
-
-.button:hover {
-    background-color: #dabbda;
-}
-
-.input {
-    padding: 5px;
-    margin: 8px;
-    box-sizing: border-box;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    width: 100%;
-}
-
 .description-input {
     height: 80px;
 }

@@ -1,7 +1,7 @@
 from app import app
 from db import db
 from flask import render_template, request, redirect, session, flash
-from datetime import datetime, timedelta, date
+from datetime import datetime, timedelta
 import calendar
 import users
 import habits
@@ -21,16 +21,18 @@ def register():
         username = request.form["username"]
         email = request.form["email"]
         password = request.form["password"]
-        if not users.register(username, email, password):
-            return render_template("register.html", notification=True, message="Registration failed!")
-        return redirect("/habits")
+        result = users.register(username, email, password)
+        if result == True:
+            return redirect("/habits")
+        else:
+            return render_template("register.html", notification=True, message=f"{result}")
 
 @app.route("/login", methods=["POST"])
 def login():
     username = request.form["username"]
     password = request.form["password"]
     if not users.login(username, password):
-        return render_template("index.html", notification=True, message="Log in failed!")
+        return render_template("index.html", notification=True, message="Wrong username or password!")
     return redirect("/day")
 
 @app.route("/logout")
@@ -86,11 +88,15 @@ def habit_status():
     user_habits = habits.getdata(user_id, date_for_database)
     edit_status = request.form.get("edit_habits")
     info = None
+    return_to_same_day = int(request.form.get("day", 0))
     for habit in user_habits:
         habit_id = habit.id
         track_number_value = request.form.get("track_value_" + str(habit_id))
         if track_number_value.lower() == "true":
             value = request.form.get("number_" + str(habit_id))
+            if value > "100000":
+                flash("Please enter correct values")
+                return redirect(f"/day?days={return_to_same_day}")
             habits.update_habit_number_value(habit_id, value)
         else: 
             value = request.form.get("checkbox_" + str(habit_id))
@@ -100,7 +106,6 @@ def habit_status():
             else:
                 info = False
                 habits.update_habit_boolean_value(habit_id, info)
-    return_to_same_day = int(request.form.get("day", 0))
     return redirect(f"/day?days={return_to_same_day}")
 
 @app.route("/edit_habits")
@@ -167,7 +172,11 @@ def challenges_page():
         user_id = session.get("user_id")
         users_challenges_ids = challenges.get_user_challenges(user_id)
         user_joined = [challenge for challenge in challenges_with_edited_dates if challenge["id"] in [id[0] for id in users_challenges_ids]]
-        return render_template("challenges.html", challenges=challenges_with_edited_dates, user_joined=user_joined)
+        users_challenges_data = [challenge for challenge in all_challenges if challenge[0] in [id[0] for id in users_challenges_ids]]
+        user_challenge_statuses = challenges.get_user_challenge_data_for_day(user_id, today)
+        
+        return render_template("challenges.html", challenges=challenges_with_edited_dates, user_joined=user_joined,
+                               user_challenges_data=users_challenges_data, challenge_statuses=user_challenge_statuses)
 
     if request.method == "POST":
         user_id = session.get("user_id")

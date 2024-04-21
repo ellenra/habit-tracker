@@ -50,10 +50,8 @@
                     {% else %}
                         {% if habit.boolean_value %}
                             {{ habit.habit_name }}: ✔️
-                            <span class="checked-icon"></span>
                         {% else %}
                             {{ habit.habit_name }}: ✗
-                            <span class="unchecked-icon"></span>
                         {% endif %}
                     {% endif %}
                 {% endif %}
@@ -65,6 +63,7 @@
         {% else %}
             <form action="/habit_status" method="POST">
                 <br/>
+                <p id="errorNotification" class="errorNotification"></p>
                 {% for habit in habits %}
                 <li>
                     {{ habit.habit_name }}
@@ -72,11 +71,17 @@
                     <input type="hidden" name="habit_id_{{ habit.id }}" value="{{ habit.id }}">
                     {% if habit.track_number_value %}
                         {% if habit.habit_name == 'mood' %}
-                        <input type="number" class="input" name="number_{{ habit.id }}" placeholder="1-5 (1=bad 5=good)">
+                            <select id="mood" class="input" name="number_{{ habit.id }}">
+                                <option value="1">1 - Awful</option>
+                                <option value="2">2 - Bad</option>
+                                <option value="3">3 - Okay</option>
+                                <option value="4">4 - Good</option>
+                                <option value="5">5 - Excellent</option>
+                            </select>
                         {% elif habit.habit_name == 'sleep' %}
-                        <input type="number" class="input" name="number_{{ habit.id }}" placeholder="h">
+                            <input type="number" id="sleepValue" class="input" name="number_{{ habit.id }}" placeholder="h">
                         {% else %}
-                        <input type="number" class="input" name="number_{{ habit.id }}">                     
+                            <input type="number" id="numberValue" class="input" name="number_{{ habit.id }}">                     
                         {% endif %}
                     {% else %}
                         <input type="checkbox" class="input" name="checkbox_{{ habit.id }}" value="true">
@@ -85,7 +90,7 @@
                 {% endfor %}
                 <input type="hidden" name="day" value="{{ days }}">
                 <input type="hidden" name="date" value="{{ date }}">
-                <input type="submit" class="button" value="Done">
+                <input type="submit" id="submitButton" class="button" value="Done">
             </form>
         {% endif %}
         {% endblock %}
@@ -127,5 +132,37 @@
             {% endfor %}
         </div>
     {% endif %}
+    <script>
+        document.getElementById("sleepValue").addEventListener("input", function() {
+            var value = parseInt(this.value)
+            var button = document.getElementById("submitButton")
+            var error = document.getElementById("errorNotification")
+
+            if (value > 30) {
+                this.classList.add("bad-input")
+                error.textContent = "Please enter smaller value!"
+                button.disabled = true
+            } else {
+                this.classList.remove("bad-input")
+                error.textContent = ""
+                button.disabled = false
+            }
+        })
+        document.getElementById("numberValue").addEventListener("input", function() {
+            var value = parseInt(this.value)
+            var button = document.getElementById("submitButton")
+            var error = document.getElementById("errorNotification")
+
+            if (value > 100000) {
+                this.classList.add("bad-input")
+                error.textContent = "Please enter smaller value!"
+                button.disabled = true
+            } else {
+                this.classList.remove("bad-input")
+                error.textContent = ""
+                button.disabled = false
+            }
+        })
+    </script>
 </body>
 </html>

@@ -11,7 +11,7 @@
         <a href="/">Home</a>
         <button class="sidebar-button" id="formButton" onClick="showForm()">Create Challenge</button>
     </nav>
-    <div id="listOfChallenges" class="container" style="display: block;">
+    <div id="listOfChallenges" class="container">
         <h2>Join challenges!<h2>
         <div class="challenges">
             {% for challenge in challenges %}
@@ -89,6 +89,26 @@
             <input type="submit" class="button" value="Create">
         </form>
         <button class="button" id="closeFormButton" onClick="closeForm()" style="display: none;">Return</button>
+    </div>
+    <div>
+        {% if challenges %}
+        <div class="container">
+            <h2>Ongoing Challenges!</h2>
+            {% for challenge in user_challenges_data %}
+            <li>
+                <ul>
+                    <h3>{{ challenge[1] }}</h3>
+                </ul>
+                <ul>
+                    Goal: {{ challenge[3] }} {{ challenge[4] }}
+                </ul>
+                <ul>
+                    Progress:
+                </ul>
+            </li>
+            {% endfor %}
+        </div>
+    {% endif %}
     </div>
     <script>
         function showForm() {
