@@ -5,41 +5,48 @@
     <title>Challenges</title>
     <link rel="stylesheet" href="/static/main.css">
     <link rel="stylesheet" href="/static/challenges.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,300&display=swap" rel="stylesheet">
 </head>
 <body>
     <nav class="sidebar">
         <a href="/">Home</a>
-        <button class="sidebar-button" id="formButton" onClick="showForm()">Create Challenge</button>
+        <a href="/challenges" {% if request.path == '/challenges' %}class="true"{% endif %}>Challenges</a>
+        <a href="/logout">Log out</a>
     </nav>
-    <div id="listOfChallenges" class="container">
-        <h2>Join challenges!<h2>
-        <div class="challenges">
-            {% for challenge in challenges %}
-            <div class="challenge" style="background-color: {{ challenge.color }};">
-                <h3>{{ challenge.title }}</h3>
-                <p/>
-                <p>{{ challenge.description}}</p>
-                <p/>
-                <p>{{ challenge.start_date }} - {{ challenge.end_date }}</p>
-                <p/>
-                {% if challenge in user_joined %}
-                <form action="/leave_challenge" method="POST">
-                    <input type="hidden" name="challenge_id" value="{{ challenge.id }}">
-                    <button type="submit" class="challenge-button joined" onmouseover="this.innerHTML = 'Leave Challenge'" onmouseout="this.innerHTML = 'Joined!'">Joined!</button>
-                </form>  
-                {% else %}
-                <form action="/join_challenge" method="POST">
-                    <input type="hidden" name="challenge_id" value="{{ challenge.id }}">
-                    <button type="submit" class="challenge-button">Join Challenge!</button>
-                </form>    
-                {% endif %}            
+    <div id="listOfChallenges" class="challenges-and-button">
+        <div class="container">
+            <h2>Join challenges!<h2>
+            <div class="challenges scrollable-challenges">
+                {% for challenge in challenges %}
+                <div class="challenge" style="background-color: {{ challenge.color }};">
+                    <h3>{{ challenge.title }}</h3>
+                    <p/>
+                    <p>{{ challenge.description}}</p>
+                    <p/>
+                    <p>{{ challenge.start_date }} - {{ challenge.end_date }}</p>
+                    <p/>
+                    {% if challenge in user_joined %}
+                    <form action="/leave_challenge" method="POST">
+                        <input type="hidden" name="challenge_id" value="{{ challenge.id }}">
+                        <button type="submit" class="challenge-button joined" onmouseover="this.innerHTML = 'Leave Challenge'" onmouseout="this.innerHTML = 'Joined!'">Joined!</button>
+                    </form>  
+                    {% else %}
+                    <form action="/join_challenge" method="POST">
+                        <input type="hidden" name="challenge_id" value="{{ challenge.id }}">
+                        <button type="submit" class="challenge-button">Join Challenge!</button>
+                    </form>    
+                    {% endif %}            
+                </div>
+                {% endfor %}
             </div>
-            {% endfor %}
         </div>
+        <button class="add-challenge-button" id="formButton" onClick="showForm()">Create Challenge</button>
     </div>
-    <div id="challengeForm" class="container" style="display: none;">
+    <div id="challengeForm" class="container hidden">
         <form action="/challenges" method="POST">
-            Create challenge!
+            <h2>Create challenge!</h2>
             <p>Title:<br>
             <input type="text" class="input" name="title"></p>
             <p>Description:<br>
@@ -71,65 +78,94 @@
             <input type="date" class="input date-input" name="end_date"></p>
             <p>Color:<br>
                 <div class="colors">
-                    <input type="radio" name="color" id="pink" value="#fde2ec">
+                    <input type="radio" name="color" id="pink" value="#fae7ee">
                     <label class="color pink" for="pink"></label>
 
-                    <input type="radio" name="color" id="yellow" value="#f8f5c7">
+                    <input type="radio" name="color" id="yellow" value="#fcfade">
                     <label class="color yellow" for="yellow"></label>
 
-                    <input type="radio" name="color" id="green" value="#d2f5d3">
+                    <input type="radio" name="color" id="green" value="#e6f8e6">
                     <label class="color green" for="green"></label>
 
-                    <input type="radio" name="color" id="blue" value="#d3eefc">
+                    <input type="radio" name="color" id="blue" value="#e8e3f3">
                     <label class="color blue" for="blue"></label>
 
-                    <input type="radio" name="color" id="purple" value="#dfd5f1">
+                    <input type="radio" name="color" id="purple" value="#e8e3f3">
                     <label class="color purple" for="purple"></label>
                 </div></p>
             <input type="submit" class="button" value="Create">
         </form>
-        <button class="button" id="closeFormButton" onClick="closeForm()" style="display: none;">Return</button>
+        <button class="button" id="closeFormButton" onClick="closeForm()">Return</button>
     </div>
-    <div>
+    <div id="userChallenges">
         {% if challenges %}
         <div class="container">
-            <h2>Ongoing Challenges!</h2>
-            {% for challenge in user_challenges_data %}
-            <li>
-                <ul>
+            <h2>Ongoing Challenges</h2>
+            <div class="scrollable-challenges">
+                {% for challenge in user_challenges_data %}
+                <li>
                     <h3>{{ challenge[1] }}</h3>
-                </ul>
-                <ul>
-                    Goal: {{ challenge[3] }} {{ challenge[4] }}
-                </ul>
-                <ul>
-                    Progress:
-                </ul>
-            </li>
-            {% endfor %}
+                    <ul>
+                        Goal: {{ challenge[3] }} {{ challenge[4] }}
+                    </ul>
+                    <ul>
+                        Progress:
+                        {% for item in progress %}
+                            {% if item[0] == challenge[0] %}
+                                {{ item[1] }}
+                            {% endif %}
+                        {% endfor %}
+                        / {{ challenge_durations[challenge[5]] }}
+                    </ul>
+                </li>
+                {% endfor %}
+            </div>
         </div>
-    {% endif %}
+        {% endif %}
+        {% if old_data %}
+        <div class="container">
+            <h2>Past Challenges</h2>
+            <div class="scrollable-challenges">
+                {% for challenge in old_data %}
+                <li>
+                    <h3>{{ challenge[1] }}</h3>
+                    <ul>
+                        Goal: {{ challenge[3] }} {{ challenge[4] }}
+                    </ul>
+                    <ul>
+                        Result:
+                        {% for item in progress %}
+                            {% if item[0] == challenge[0] %}
+                                {{ item[1] }}
+                            {% endif %}
+                        {% endfor %}
+                        / {{ challenge_durations[challenge[5]] }}
+                    </ul>
+                    <ul>
+                        End date: {{ challenge[7] }}
+                    </ul>
+                </li>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
     </div>
     <script>
         function showForm() {
             var form = document.getElementById("challengeForm");
-            var openFormButton = document.getElementById("formButton");
-            var closeFormButton = document.getElementById("closeFormButton")
-            var list = document.getElementById("listOfChallenges")
-            form.style.display = "block";
-            openFormButton.style.display = "none";
-            closeFormButton.style.display = "block";
-            list.style.display = "none";
+            var list = document.getElementById("listOfChallenges");
+            var challenges = document.getElementById("userChallenges");
+            form.classList.remove("hidden");
+            list.classList.add("hidden");
+            challenges.classList.add("hidden");
         }
         function closeForm() {
             var form = document.getElementById("challengeForm");
-            var openFormButton = document.getElementById("formButton");
-            var closeFormButton = document.getElementById("closeFormButton")
-            var list = document.getElementById("listOfChallenges")
-            form.style.display = "none";
-            openFormButton.style.display = "block";
-            closeFormButton.style.display = "none";
-            list.style.display = "block";
+            var list = document.getElementById("listOfChallenges");
+            var challenges = document.getElementById("userChallenges");
+            form.classList.add("hidden");
+            list.classList.remove("hidden");
+            challenges.classList.remove("hidden");
         }
     </script>
 </body>

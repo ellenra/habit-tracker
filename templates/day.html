@@ -4,15 +4,16 @@
     <meta charset="UTF-8">
     <title>Daily View</title>
     <link rel="stylesheet" href="/static/main.css">
-    <link rel="stylesheet" href="/static/calendar.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,300&display=swap" rel="stylesheet">
 </head>
 <body>
     <nav class="sidebar">
-        <a href="/challenges">Join Challenges</a>
-        <a href="/logout">Log out</a><br>
+        <a href="/" {% if request.path == '/day' or request.path.startswith('/edit_habits') %}class="true"{% endif %}>Home</a>
+        <a href="/challenges" {% if request.path == '/challenges' %}class="true"{% endif %}>Challenges</a>
+        <a href="/logout">Log out</a>
     </nav>
-    <br />
-    <br />
     <div class="container">
         {% block content %}
         <div class="links">
@@ -72,11 +73,11 @@
                     {% if habit.track_number_value %}
                         {% if habit.habit_name == 'mood' %}
                             <select id="mood" class="input" name="number_{{ habit.id }}">
-                                <option value="1">1 - Awful</option>
-                                <option value="2">2 - Bad</option>
-                                <option value="3">3 - Okay</option>
-                                <option value="4">4 - Good</option>
                                 <option value="5">5 - Excellent</option>
+                                <option value="4">4 - Good</option>
+                                <option value="3">3 - Okay</option>
+                                <option value="2">2 - Bad</option>
+                                <option value="1">1 - Awful</option>
                             </select>
                         {% elif habit.habit_name == 'sleep' %}
                             <input type="number" id="sleepValue" class="input" name="number_{{ habit.id }}" placeholder="h">
@@ -100,36 +101,34 @@
     {% if challenges %}
         <div class="container">
             <h2>Challenges!</h2>
-            {% for challenge in challenges %}
-            <li>
-                <ul>
+            <div class="scrollable-challenges">
+                {% for challenge in challenges %}
+                <li>
                     <h3>{{ challenge[1] }}</h3>
-                </ul>
-                <ul>
                     Goal: {{ challenge[3] }} {{ challenge[4] }}
-                </ul>
-                <ul>
-                    {% if challenge[0] not in challenge_statuses|map(attribute=0) %}
-                        <form action="/challenge_status" method="POST">
-                            <input type="hidden" name="date" value="{{ date }}">
-                            <input type="hidden" name="day" value="{{ days }}">
-                            Done: <input type="checkbox" class="input" name="challenge_id" value="{{ challenge.id }}" onchange="this.form.submit()">
-                        </form>
-                    {% else %}
-                        {% for status in challenge_statuses %}
-                        {% if status[0] == challenge[0] %}
+                    <ul>
+                        {% if challenge[0] not in challenge_statuses|map(attribute=0) %}
                             <form action="/challenge_status" method="POST">
                                 <input type="hidden" name="date" value="{{ date }}">
                                 <input type="hidden" name="day" value="{{ days }}">
-                                <input type="hidden" name="challenge_id" value="{{ challenge.id }}">
-                                Done: <input type="checkbox" class="input" name="completed" value="true" {% if status[1] %} checked {% endif %} onchange="this.form.submit()">
+                                Done: <input type="checkbox" class="input" name="challenge_id" value="{{ challenge.id }}" onchange="this.form.submit()">
                             </form>
+                        {% else %}
+                            {% for status in challenge_statuses %}
+                            {% if status[0] == challenge[0] %}
+                                <form action="/challenge_status" method="POST">
+                                    <input type="hidden" name="date" value="{{ date }}">
+                                    <input type="hidden" name="day" value="{{ days }}">
+                                    <input type="hidden" name="challenge_id" value="{{ challenge.id }}">
+                                    Done: <input type="checkbox" class="input" name="completed" value="true" {% if status[1] %} checked {% endif %} onchange="this.form.submit()">
+                                </form>
+                            {% endif %}
+                            {% endfor %}
                         {% endif %}
-                        {% endfor %}
-                    {% endif %}
-                </ul>
-            </li>
-            {% endfor %}
+                    </ul>
+                </li>
+                {% endfor %}
+            </div>
         </div>
     {% endif %}
     <script>
@@ -141,6 +140,10 @@
             if (value > 30) {
                 this.classList.add("bad-input")
                 error.textContent = "Please enter smaller value!"
+                button.disabled = true
+            } else if (value < 0) {
+                this.classList.add("bad-input")
+                error.textContent = "Please enter bigger value!"
                 button.disabled = true
             } else {
                 this.classList.remove("bad-input")
@@ -156,6 +159,10 @@
             if (value > 100000) {
                 this.classList.add("bad-input")
                 error.textContent = "Please enter smaller value!"
+                button.disabled = true
+            } else if (value < 0) {
+                this.classList.add("bad-input")
+                error.textContent = "Please enter bigger value!"
                 button.disabled = true
             } else {
                 this.classList.remove("bad-input")

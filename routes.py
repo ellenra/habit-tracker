@@ -9,7 +9,7 @@ import challenges
 
 @app.route("/")
 def index():
-    if not session:
+    if not session.get("user_id"):
         return render_template("index.html")
     return redirect("/day")
 
@@ -94,7 +94,7 @@ def habit_status():
         track_number_value = request.form.get("track_value_" + str(habit_id))
         if track_number_value.lower() == "true":
             value = request.form.get("number_" + str(habit_id))
-            if value > "100000":
+            if int(value) > 100000 or int(value) < 0:
                 flash("Please enter correct values")
                 return redirect(f"/day?days={return_to_same_day}")
             habits.update_habit_number_value(habit_id, value)
@@ -149,6 +149,18 @@ def month():
     
     return render_template("month.html", month=month_date, habits=users_habits, habit_data=habit_data_dictionary, first_day=first_day_in_database, last_day=last_day_in_database)
 
+challenge_durations = {
+    "1": 7,
+    "2": 14,
+    "3": 21,
+    "4": 30,
+    "5": 60,
+    "6": 90,
+    "7": 120,
+    "8": 180,
+    "9": 365
+}
+
 @app.route("/challenges", methods=["GET", "POST"])
 def challenges_page():
     if request.method == "GET":
@@ -173,10 +185,21 @@ def challenges_page():
         users_challenges_ids = challenges.get_user_challenges(user_id)
         user_joined = [challenge for challenge in challenges_with_edited_dates if challenge["id"] in [id[0] for id in users_challenges_ids]]
         users_challenges_data = [challenge for challenge in all_challenges if challenge[0] in [id[0] for id in users_challenges_ids]]
-        user_challenge_statuses = challenges.get_user_challenge_data_for_day(user_id, today)
-        
+        challenge_progress = [
+            [challenge_id[0], challenges.get_user_challenge_progress(user_id, challenge_id[0])]
+            for challenge_id in users_challenges_ids
+        ]
+        today_for_database = today.strftime("%Y-%m-%d")
+        old_challenges = challenges.get_past_challenges(today_for_database)
+        list_of_users_challenges_ids = [id[0] for id in users_challenges_ids]
+        users_old_challenges = [id for id in list_of_users_challenges_ids if id in old_challenges]
+        old_data = []
+        for id in users_old_challenges:
+            challenge = challenges.get_data_from_challenge(id)
+            old_data.append(challenge)
         return render_template("challenges.html", challenges=challenges_with_edited_dates, user_joined=user_joined,
-                               user_challenges_data=users_challenges_data, challenge_statuses=user_challenge_statuses)
+                               user_challenges_data=users_challenges_data, progress=challenge_progress,
+                               challenge_durations=challenge_durations, old_challenges=old_challenges, old_data=old_data)
 
     if request.method == "POST":
         user_id = session.get("user_id")

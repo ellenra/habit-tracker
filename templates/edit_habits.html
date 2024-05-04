@@ -10,8 +10,14 @@
         <input type="hidden" name="track_value_{{ habit.id }}" value="{{ habit.track_number_value }}">
         <input type="hidden" name="habit_id_{{ habit.id }}" value="{{ habit.id }}">
         {% if habit.track_number_value %}
-            {% if habit.habit_name == 'mood' %}
-            <input type="number" class="input" name="number_{{ habit.id }}" value="{{ habit.number_value }}" placeholder="1-5 (1=bad 5=good)">
+        {% if habit.habit_name == 'mood' %}
+            <select id="mood" class="input" name="number_{{ habit.id }}">
+                <option value="5" {% if habit.number_value == 5 %} selected {% endif %}>5 - Excellent</option>
+                <option value="4" {% if habit.number_value == 4 %} selected {% endif %}>4 - Good</option>
+                <option value="3" {% if habit.number_value == 3 %} selected {% endif %}>3 - Okay</option>
+                <option value="2" {% if habit.number_value == 2 %} selected {% endif %}>2 - Bad</option>
+                <option value="1" {% if habit.number_value == 1 %} selected {% endif %}>1 - Awful</option>
+            </select>
             {% else %}
             <input type="number" class="input" name="number_{{ habit.id }}" value="{{ habit.number_value }}">                     
             {% endif %}

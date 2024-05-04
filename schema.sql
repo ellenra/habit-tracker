@@ -40,8 +40,7 @@ CREATE TABLE UsersChallenges (
     id SERIAL PRIMARY KEY,
     user_id INTEGER REFERENCES Users(id),
     challenge_id INTEGER REFERENCES Challenges(id),
-    joined BOOLEAN,
-    start_date DATE
+    joined BOOLEAN
 );
 
 CREATE TABLE UsersChallengeLogs (
