@@ -1,9 +1,9 @@
 import os
 import re
-from db import db
 from flask import session, request, abort
 from sqlalchemy.sql import text
 from werkzeug.security import check_password_hash, generate_password_hash
+from db import db
 
 def register(username, email, password):
     if not username or not email or not password:
@@ -12,16 +12,20 @@ def register(username, email, password):
         return "Password must be longer!"
     if not re.match(r"[^@]+@[^@]+\.[^@]+", email):
         return "Invalid email format!"
-    username_exists = db.session.execute(text("SELECT * FROM users WHERE username = :username"), {"username": username}).fetchone()
+    username_exists = db.session.execute(text("SELECT * FROM users WHERE username = :username"),
+                                         {"username": username}).fetchone()
     if username_exists:
         return "Username already exists!"
+
     hashed_password = generate_password_hash(password)
     try:
         hashed_password = generate_password_hash(password)
-        sql = text("INSERT INTO users (username, email, password) VALUES (:username, :email, :password)")
+        sql = text("INSERT INTO users (username, email, password) "
+                   "VALUES (:username, :email, :password)")
         db.session.execute(sql, {"username":username, "email":email, "password":hashed_password})
         db.session.commit()
-        user_id = db.session.execute(text("SELECT id FROM users WHERE username = :username"), {"username": username}).fetchone()[0]
+        user_id = db.session.execute(text("SELECT id FROM users WHERE username = :username"),
+                                     {"username": username}).fetchone()[0]
         session["username"] = username
         session["user_id"] = user_id
         session["csrf_token"] = os.urandom(16).hex()
@@ -50,4 +54,3 @@ def logout():
 def check_csrf():
     if session.get("csrf_token") != request.form.get("csrf_token"):
         abort(403)
-

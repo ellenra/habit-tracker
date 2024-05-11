@@ -1,8 +1,7 @@
-from app import app
-from db import db
-from flask import render_template, request, redirect, session, url_for
-from datetime import datetime, timedelta
 import calendar
+from datetime import datetime, timedelta
+from flask import render_template, request, redirect, session, url_for
+from app import app
 import users
 import habits
 import challenges
@@ -17,22 +16,21 @@ def index():
 def register():
     if request.method == "GET":
         return render_template("register.html")
-    if request.method == "POST":
-        username = request.form["username"]
-        email = request.form["email"]
-        password = request.form["password"]
-        result = users.register(username, email, password)
-        if result == True:
-            return redirect("/habits")
-        else:
-            return render_template("register.html", notification=True, message=f"{result}")
+    username = request.form["username"]
+    email = request.form["email"]
+    password = request.form["password"]
+    result = users.register(username, email, password)
+    if result is True:
+        return redirect("/habits")
+    return render_template("register.html", notification=True, message=f"{result}")
 
 @app.route("/login", methods=["POST"])
 def login():
     username = request.form["username"]
     password = request.form["password"]
     if not users.login(username, password):
-        return render_template("index.html", notification=True, message="Wrong username or password!")
+        return render_template("index.html", notification=True,
+                               message="Wrong username or password!")
     return redirect("/day")
 
 @app.route("/logout")
@@ -47,19 +45,24 @@ def day():
     date = (datetime.now() + timedelta(days=change_day)).strftime("%A, %d.%m.%Y")
     date_for_database = (datetime.now() + timedelta(days=change_day)).strftime("%Y-%m-%d")
     habits.add_habits_for_the_day(user_id, date_for_database)
-    
+
     user_habits = habits.getdata(user_id, date_for_database)
     form_status = habits.get_form_status(date_for_database, user_id)
 
     users_challenges = challenges.get_user_challenges(user_id)
     all_challenges = challenges.get_challenges(date_for_database)
-    users_challenges_data = [challenge for challenge in all_challenges if challenge[0] in [id[0] for id in users_challenges]]
+    users_challenges_data = [challenge for challenge in all_challenges if
+                             challenge[0] in [id[0] for id in users_challenges]]
     user_challenge_statuses = challenges.get_user_challenge_data_for_day(user_id, date_for_database)
-    
+
     error = request.args.get("error")
-    print("ERROR", error)
-    return render_template("day.html", date=date, habits=user_habits, days=change_day, form_status=form_status,
-                           challenges=users_challenges_data, challenge_statuses=user_challenge_statuses, error=error)
+    return render_template("day.html", date=date,
+                           habits=user_habits,
+                           days=change_day,
+                           form_status=form_status,
+                           challenges=users_challenges_data,
+                           challenge_statuses=user_challenge_statuses,
+                           error=error)
 
 @app.route("/habits", methods=["GET", "POST"])
 def manage_habits():
@@ -67,21 +70,20 @@ def manage_habits():
         user_id = session.get("user_id")
         user_habits = habits.gethabits(user_id)
         return render_template("habits.html", habits=user_habits)
-    if request.method == "POST":
-        user_id = session.get("user_id")
-        date_now = datetime.now().strftime("%Y-%m-%d")
-        habits.delete_habits(user_id)
-        habits.delete_data(user_id, date_now)
-        sleep = request.form.get("sleep")
-        workout = request.form.get("workout")
-        steps = request.form.get("steps")
-        study = request.form.get("study")
-        journal = request.form.get("journal")
-        meditate = request.form.get("meditate")
-        mood = request.form.get("mood")
-        habits.addhabits(sleep, workout, steps, study, journal, meditate, mood, user_id)
-        return redirect("/")
-    
+    user_id = session.get("user_id")
+    date_now = datetime.now().strftime("%Y-%m-%d")
+    habits.delete_habits(user_id)
+    habits.delete_data(user_id, date_now)
+    sleep = request.form.get("sleep")
+    workout = request.form.get("workout")
+    steps = request.form.get("steps")
+    study = request.form.get("study")
+    journal = request.form.get("journal")
+    meditate = request.form.get("meditate")
+    mood = request.form.get("mood")
+    habits.addhabits(sleep, workout, steps, study, journal, meditate, mood, user_id)
+    return redirect("/")
+
 @app.route("/habit_status", methods=["POST"])
 def habit_status():
     users.check_csrf()
@@ -99,9 +101,10 @@ def habit_status():
         if track_number_value.lower() == "true":
             value = request.form.get("number_" + str(habit_id))
             if int(value) > 100000 or int(value) < 0:
-                return redirect(url_for('day', days=return_to_same_day, error="Please enter correct values!"))
+                return redirect(url_for('day', days=return_to_same_day,
+                                        error="Please enter correct values!"))
             habits.update_habit_number_value(habit_id, value)
-        else: 
+        else:
             value = request.form.get("checkbox_" + str(habit_id))
             if value or edit_status:
                 info = True
@@ -119,7 +122,10 @@ def edit_habits():
     date_for_database = date_object.strftime("%Y%m%d")
     user_habits = habits.getdata(user_id, date_for_database)
     current_day_for_day_route = int(request.args.get("days", 0))
-    return render_template("edit_habits.html", habits=user_habits, date=date, days=current_day_for_day_route)
+    return render_template("edit_habits.html",
+                           habits=user_habits,
+                           date=date,
+                           days=current_day_for_day_route)
 
 @app.route("/month")
 def month():
@@ -128,7 +134,7 @@ def month():
     get_month = request.args.get("month")
     if get_date:
         date = datetime.strptime(get_date, "%A, %d.%m.%Y")
-    else: 
+    else:
         date = datetime.strptime(get_month, "%A, %d.%m.%Y")
     month_date = date.strftime("%B, %Y")
     date_for_database = date.strftime("%Y%m%d")
@@ -145,20 +151,24 @@ def month():
     users_habits = habits.gethabits(user_id)
     first_day_in_database = first_day.date()
     last_day_in_database = last_day.date()
-    
+
     habit_data_dictionary = {}
-    for day in habits_data:
-        for data in day:
+    for item in habits_data:
+        for data in item:
             key = (data[2], data[3].day)
             if key not in habit_data_dictionary:
                 habit_data_dictionary[key] = []
             habit_data_dictionary[key].append(data)
-            
+
     previous_month = (first_day - timedelta(days=1)).strftime("%A, %d.%m.%Y")
     next_month = (last_day + timedelta(days=1)).strftime("%A, %d.%m.%Y")
-    
-    return render_template("month.html", month=month_date, habits=users_habits, habit_data=habit_data_dictionary,
-                           first_day=first_day_in_database, last_day=last_day_in_database, previous_month=previous_month,
+
+    return render_template("month.html", month=month_date,
+                           habits=users_habits,
+                           habit_data=habit_data_dictionary,
+                           first_day=first_day_in_database,
+                           last_day=last_day_in_database,
+                           previous_month=previous_month,
                            next_month=next_month)
 
 challenge_durations = {
@@ -194,24 +204,31 @@ def challenges_page():
         ]
         user_id = session.get("user_id")
         users_challenges_ids = challenges.get_user_challenges(user_id)
-        user_joined = [challenge for challenge in challenges_with_edited_dates if challenge["id"] in [id[0] for id in users_challenges_ids]]
-        users_challenges_data = [challenge for challenge in all_challenges if challenge[0] in [id[0] for id in users_challenges_ids]]
-        challenge_progress = [
-            [challenge_id[0], challenges.get_user_challenge_progress(user_id, challenge_id[0])]
-            for challenge_id in users_challenges_ids
-        ]
+        user_joined = [challenge for challenge in challenges_with_edited_dates if
+                       challenge["id"] in [id[0] for id in users_challenges_ids]]
+        users_challenges_data = [challenge for challenge in all_challenges if
+                                 challenge[0] in [id[0] for id in users_challenges_ids]]
+        challenge_progress = [[challenge_id[0],
+                               challenges.get_user_challenge_progress(user_id, challenge_id[0])]
+                              for challenge_id in users_challenges_ids]
         today_for_database = today.strftime("%Y-%m-%d")
         old_challenges = challenges.get_past_challenges(today_for_database)
         list_of_users_challenges_ids = [id[0] for id in users_challenges_ids]
         users_old_challenges = [id for id in list_of_users_challenges_ids if id in old_challenges]
         old_data = []
-        for id in users_old_challenges:
-            challenge = challenges.get_data_from_challenge(id)
+        for item in users_old_challenges:
+            challenge = challenges.get_data_from_challenge(item)
             old_data.append(challenge)
         date_for_month_view = today.strftime("%A, %d.%m.%Y")
-        return render_template("challenges.html", challenges=challenges_with_edited_dates, user_joined=user_joined,
-                               user_challenges_data=users_challenges_data, progress=challenge_progress,
-                               challenge_durations=challenge_durations, old_challenges=old_challenges, old_data=old_data, date=date_for_month_view)
+        return render_template("challenges.html",
+                               challenges=challenges_with_edited_dates,
+                               user_joined=user_joined,
+                               user_challenges_data=users_challenges_data,
+                               progress=challenge_progress,
+                               challenge_durations=challenge_durations,
+                               old_challenges=old_challenges,
+                               old_data=old_data,
+                               date=date_for_month_view)
 
     if request.method == "POST":
         users.check_csrf()
@@ -223,16 +240,17 @@ def challenges_page():
         duration = request.form.get("duration")
         start_date = request.form.get("start_date")
         end_date = request.form.get("end_date")
-        challenges.add_challenge(title, description, goal, goal_frequency, duration, start_date, end_date, user_id)
+        challenges.add_challenge(title, description, goal, goal_frequency,
+                                 duration, start_date, end_date, user_id)
         return redirect("/challenges")
-        
+
 @app.route("/join_challenge", methods=["POST"])
 def join():
     user_id = session.get("user_id")
     challenge_id = request.form.get("challenge_id")
     challenges.join_challenge(user_id, challenge_id)
     return redirect("/challenges")
-    
+
 @app.route("/leave_challenge", methods=["POST"])
 def unjoin():
     user_id = session.get("user_id")
@@ -250,26 +268,20 @@ def challenge_status():
     challenge_frequency = challenges.get_challenge_frequency(challenge_id)
     if challenge_frequency[0] == "week":
         first_day_of_the_week = date_object - timedelta(days=date_object.weekday())
-        for day in range(7):
-            date = first_day_of_the_week + timedelta(days=day)
+        for number in range(7):
+            date = first_day_of_the_week + timedelta(days=number)
             date_for_database = date.strftime("%Y%m%d")
             print(date)
             challenges.update_challenge_status(user_id, challenge_id, date_for_database)
     elif challenge_frequency[0] == "month":
         year = date_object.year
-        month = date_object.month
-        days_in_month = calendar.monthrange(year, month)[1]
-        for day in range(1, days_in_month + 1):
-            date = datetime(year, month, day)
+        month_of_challenge = date_object.month
+        days_in_month = calendar.monthrange(year, month_of_challenge)[1]
+        for number in range(1, days_in_month + 1):
+            date = datetime(year, month_of_challenge, number)
             date_for_database = date.strftime("%Y%m%d")
             challenges.update_challenge_status(user_id, challenge_id, date_for_database)
     else:
         challenges.update_challenge_status(user_id, challenge_id, date_for_database)
     return_to_same_day = int(request.form.get("day", 0))
     return redirect(f"/day?days={return_to_same_day}")
-
-
-
-
-
-        
