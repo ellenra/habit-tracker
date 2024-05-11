@@ -1,12 +1,12 @@
 .container {
-    background-color: #edf2f4;
+    background-color: #f8f8f8;
     padding: 10px;
-    padding-bottom: 60px;
-    padding-top: 40px;
+    padding-bottom: 30px;
+    padding-top: 30px;
     border-radius: 12px;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
     text-align: center;
-    width: 100%;
+    margin-left: 20%;
     max-width: 90%;
     margin-top: 200px;
 }
@@ -15,24 +15,36 @@ table {
     border-collapse: collapse;
     width: 100%;
     table-layout: fixed;
+    max-width: 100%;
 }
 
 th, td {
-    width: 20px;
-    height: 20px;
-    padding: 10px;
-    border: 1px solid #ccc;
-}
-
-td {
     height: 30px;
-}
-
-th.month-date-column {
-    width: 100px;
+    padding: 5px;
+    border: 1px solid #ccc;
 }
 
 a {
     color: black;
+}
+
+tbody {
+    font-size: smaller;
+}
+
+.month-links {
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.month-links a, h1 {
+    margin-right: 50px;
+}
+
+.month-links a {
+    margin-top: 30px;
+    text-decoration: none;
 }
 

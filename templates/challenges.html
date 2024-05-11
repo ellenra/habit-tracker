@@ -13,6 +13,7 @@
     <nav class="sidebar">
         <a href="/">Home</a>
         <a href="/challenges" {% if request.path == '/challenges' %}class="true"{% endif %}>Challenges</a>
+        <a href="/month?date={{ date }}">Monthly View</a>
         <a href="/logout">Log out</a>
     </nav>
     <div id="listOfChallenges" class="challenges-and-button">
@@ -20,7 +21,7 @@
             <h2>Join challenges!<h2>
             <div class="challenges scrollable-challenges">
                 {% for challenge in challenges %}
-                <div class="challenge" style="background-color: {{ challenge.color }};">
+                <div class="challenge">
                     <h3>{{ challenge.title }}</h3>
                     <p/>
                     <p>{{ challenge.description}}</p>
@@ -47,10 +48,11 @@
     <div id="challengeForm" class="container hidden">
         <form action="/challenges" method="POST">
             <h2>Create challenge!</h2>
+            <p id="errorNotification" class="errorNotification"></p>
             <p>Title:<br>
-            <input type="text" class="input" name="title"></p>
+            <input id="title" type="text" class="input" name="title"></p>
             <p>Description:<br>
-            <textarea type="text" class="input description-input" name="description"></textarea></p>
+            <textarea id="description" type="text" class="input description-input" name="description"></textarea></p>
             <p>Goal:</p>
             <div>
                 <input type="text" class="input" name="goal" placeholder="(e.g. 10,000 steps, read 10 pages, no added sugar) ">
@@ -76,28 +78,12 @@
             <input type="date" class="input date-input" name="start_date"></p>
             <p>End date:<br>
             <input type="date" class="input date-input" name="end_date"></p>
-            <p>Color:<br>
-                <div class="colors">
-                    <input type="radio" name="color" id="pink" value="#fae7ee">
-                    <label class="color pink" for="pink"></label>
-
-                    <input type="radio" name="color" id="yellow" value="#fcfade">
-                    <label class="color yellow" for="yellow"></label>
-
-                    <input type="radio" name="color" id="green" value="#e6f8e6">
-                    <label class="color green" for="green"></label>
-
-                    <input type="radio" name="color" id="blue" value="#e8e3f3">
-                    <label class="color blue" for="blue"></label>
-
-                    <input type="radio" name="color" id="purple" value="#e8e3f3">
-                    <label class="color purple" for="purple"></label>
-                </div></p>
+            <input type="hidden" name="csrf_token" value="{{ session.csrf_token}}">
             <input type="submit" class="button" value="Create">
         </form>
         <button class="button" id="closeFormButton" onClick="closeForm()">Return</button>
     </div>
-    <div id="userChallenges">
+    <div id="userChallenges" class="user-challenges">
         {% if challenges %}
         <div class="container">
             <h2>Ongoing Challenges</h2>
@@ -167,6 +153,33 @@
             list.classList.remove("hidden");
             challenges.classList.remove("hidden");
         }
+        document.getElementById("title").addEventListener("input", function() {
+            var title = this.value
+            var button = document.getElementById("submitButton")
+            var error = document.getElementById("errorNotification")
+
+            if (title.length > 30) {
+                this.classList.add("bad-input")
+                error.textContent = "Title must be shorter"
+                button.disabled = true
+            } else {
+                this.classList.remove("bad-input")
+                error.textContent = ""
+                button.disabled = false
+            }
+        })
+        document.getElementById("description").addEventListener("input", function() {
+            var description = this.value
+            var error = document.getElementById("errorNotification")
+
+            if (description.length > 200) {
+                this.classList.add("bad-input")
+                error.textContent = "Description must be shorter"
+            } else {
+                this.classList.remove("bad-input")
+                error.textContent = ""
+            }
+        })
     </script>
 </body>
 </html>

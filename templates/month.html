@@ -5,10 +5,23 @@
     <title>Monthly View</title>
     <link rel="stylesheet" href="/static/main.css">
     <link rel="stylesheet" href="/static/month.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,300&display=swap" rel="stylesheet">
 </head>
 <body>
+    <nav class="sidebar">
+        <a href="/" {% if request.path == '/day' or request.path.startswith('/edit_habits') %}class="true"{% endif %}>Home</a>
+        <a href="/challenges" {% if request.path == '/challenges' %}class="true"{% endif %}>Challenges</a>
+        <a href="/month?date={{ date }}" {% if request.path.startswith('/month') %}class="true"{% endif %}>Monthly View</a>
+        <a href="/logout">Log out</a>
+    </nav>
     <div class="container">
-        <h1>{{ month }}</h1>
+        <div class="month-links">
+            <a href="/month?month={{ previous_month }}">←</a>
+            <h1>{{ month }}</h1>
+            <a href="/month?month={{ next_month }}">→</a>
+        </div>
         <table>
             <thead>
                 <tr>
@@ -43,22 +56,10 @@
                                     {% endif %}
                                 {% else %}
                                     {% if data[4] == True %}
-                                        {% if data[2] == 'steps' %}
-                                            {% if data[5] %}
-                                                {% if data[5] >= 10000 %}
-                                                    <td>✔️</td>
-                                                {% elif data[5] < 10000 %}
-                                                    <td>✗</td>
-                                                {% endif %}
-                                            {% else %}
-                                                <td></td>
-                                            {% endif %}
+                                        {% if data[5] %}
+                                            <td>{{ data[5] }}</td>
                                         {% else %}
-                                            {% if data[5] %}
-                                                <td>{{ data[5] }}</td>
-                                            {% else %}
-                                                <td></td>
-                                            {% endif %}
+                                            <td></td>
                                         {% endif %}
                                     {% else %}
                                         {% if data[6] == True %}
@@ -80,7 +81,6 @@
             
         </table>
         <br />
-        <a href="/day">Return</a>
     </div>
 </body>
 </html>

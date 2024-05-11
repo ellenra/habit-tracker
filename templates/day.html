@@ -12,16 +12,22 @@
     <nav class="sidebar">
         <a href="/" {% if request.path == '/day' or request.path.startswith('/edit_habits') %}class="true"{% endif %}>Home</a>
         <a href="/challenges" {% if request.path == '/challenges' %}class="true"{% endif %}>Challenges</a>
+        <a href="/month?date={{ date }}">Monthly View</a>
         <a href="/logout">Log out</a>
     </nav>
+    <br/>
     <div class="container">
         {% block content %}
         <div class="links">
             <h2>{{ date }}</h2>
             <a href="/day?days={{ days-1 }}">Previous Day</a>
             <a href="/day?days={{ days+1 }}">Next Day</a>
-            <a href="/month?date={{ date }}">Monthly View</a>
         </div>
+        {% if error %}
+        <div class="errorNotification">
+            <p>{{ error }}</p>
+        </div>
+        {% endif %}
         {% if form_status == True %}
         <ul>
             {% for habit in habits %}
@@ -63,7 +69,6 @@
         <br/>
         {% else %}
             <form action="/habit_status" method="POST">
-                <br/>
                 <p id="errorNotification" class="errorNotification"></p>
                 {% for habit in habits %}
                 <li>
@@ -91,6 +96,7 @@
                 {% endfor %}
                 <input type="hidden" name="day" value="{{ days }}">
                 <input type="hidden" name="date" value="{{ date }}">
+                <input type="hidden" name="csrf_token" value="{{ session.csrf_token}}">
                 <input type="submit" id="submitButton" class="button" value="Done">
             </form>
         {% endif %}

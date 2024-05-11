@@ -30,6 +30,7 @@
     <input type="hidden" name="day" value="{{ days }}">
     <input type="hidden" name="date" value="{{ date }}">
     <input type="hidden" name="edit_form" value="True">
+    <input type="hidden" name="csrf_token" value="{{ session.csrf_token}}">
     <input type="submit" class="button" value="Done">
 </form>
 <a href="/day">Return</a>

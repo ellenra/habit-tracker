@@ -1,6 +1,6 @@
 from app import app
 from db import db
-from flask import render_template, request, redirect, session, flash
+from flask import render_template, request, redirect, session, url_for
 from datetime import datetime, timedelta
 import calendar
 import users
@@ -55,8 +55,11 @@ def day():
     all_challenges = challenges.get_challenges(date_for_database)
     users_challenges_data = [challenge for challenge in all_challenges if challenge[0] in [id[0] for id in users_challenges]]
     user_challenge_statuses = challenges.get_user_challenge_data_for_day(user_id, date_for_database)
+    
+    error = request.args.get("error")
+    print("ERROR", error)
     return render_template("day.html", date=date, habits=user_habits, days=change_day, form_status=form_status,
-                           challenges=users_challenges_data, challenge_statuses=user_challenge_statuses)
+                           challenges=users_challenges_data, challenge_statuses=user_challenge_statuses, error=error)
 
 @app.route("/habits", methods=["GET", "POST"])
 def manage_habits():
@@ -81,6 +84,7 @@ def manage_habits():
     
 @app.route("/habit_status", methods=["POST"])
 def habit_status():
+    users.check_csrf()
     user_id = session.get("user_id")
     date = request.form.get("date")
     date_object = datetime.strptime(date, "%A, %d.%m.%Y")
@@ -95,8 +99,7 @@ def habit_status():
         if track_number_value.lower() == "true":
             value = request.form.get("number_" + str(habit_id))
             if int(value) > 100000 or int(value) < 0:
-                flash("Please enter correct values")
-                return redirect(f"/day?days={return_to_same_day}")
+                return redirect(url_for('day', days=return_to_same_day, error="Please enter correct values!"))
             habits.update_habit_number_value(habit_id, value)
         else: 
             value = request.form.get("checkbox_" + str(habit_id))
@@ -122,7 +125,11 @@ def edit_habits():
 def month():
     user_id = session.get("user_id")
     get_date = request.args.get("date")
-    date = datetime.strptime(get_date, "%A, %d.%m.%Y")
+    get_month = request.args.get("month")
+    if get_date:
+        date = datetime.strptime(get_date, "%A, %d.%m.%Y")
+    else: 
+        date = datetime.strptime(get_month, "%A, %d.%m.%Y")
     month_date = date.strftime("%B, %Y")
     date_for_database = date.strftime("%Y%m%d")
     _, days_in_month = calendar.monthrange(date.year, date.month)
@@ -146,8 +153,13 @@ def month():
             if key not in habit_data_dictionary:
                 habit_data_dictionary[key] = []
             habit_data_dictionary[key].append(data)
+            
+    previous_month = (first_day - timedelta(days=1)).strftime("%A, %d.%m.%Y")
+    next_month = (last_day + timedelta(days=1)).strftime("%A, %d.%m.%Y")
     
-    return render_template("month.html", month=month_date, habits=users_habits, habit_data=habit_data_dictionary, first_day=first_day_in_database, last_day=last_day_in_database)
+    return render_template("month.html", month=month_date, habits=users_habits, habit_data=habit_data_dictionary,
+                           first_day=first_day_in_database, last_day=last_day_in_database, previous_month=previous_month,
+                           next_month=next_month)
 
 challenge_durations = {
     "1": 7,
@@ -176,7 +188,6 @@ def challenges_page():
                 "duration": item[5],
                 "start_date": item[6].strftime("%d.%m.%Y"),
                 "end_date": item[7].strftime("%d.%m.%Y"),
-                "color": item[8],
                 "user_id": item[9]
             }
             for item in all_challenges
@@ -197,11 +208,13 @@ def challenges_page():
         for id in users_old_challenges:
             challenge = challenges.get_data_from_challenge(id)
             old_data.append(challenge)
+        date_for_month_view = today.strftime("%A, %d.%m.%Y")
         return render_template("challenges.html", challenges=challenges_with_edited_dates, user_joined=user_joined,
                                user_challenges_data=users_challenges_data, progress=challenge_progress,
-                               challenge_durations=challenge_durations, old_challenges=old_challenges, old_data=old_data)
+                               challenge_durations=challenge_durations, old_challenges=old_challenges, old_data=old_data, date=date_for_month_view)
 
     if request.method == "POST":
+        users.check_csrf()
         user_id = session.get("user_id")
         title = request.form.get("title")
         description = request.form.get("description")
@@ -210,8 +223,7 @@ def challenges_page():
         duration = request.form.get("duration")
         start_date = request.form.get("start_date")
         end_date = request.form.get("end_date")
-        color = request.form.get("color")
-        challenges.add_challenge(title, description, goal, goal_frequency, duration, start_date, end_date, color, user_id)
+        challenges.add_challenge(title, description, goal, goal_frequency, duration, start_date, end_date, user_id)
         return redirect("/challenges")
         
 @app.route("/join_challenge", methods=["POST"])

@@ -5,15 +5,15 @@
 }
 
 .challenge {
+    background-color: #e7e0eb;
     width: 300px;
     height: 200px;
     border-radius: 12px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
     text-align: center;
     font-size: 17px;
     font-weight: 400;
     margin: 10px;
-    overflow: hidden;
+    overflow-y: auto;
     padding: 20px;
 }
 
@@ -49,44 +49,6 @@
     width: auto;
 }
 
-.colors {
-    display: flex;
-    justify-content: center;
-}
-
-.color {
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    margin: 0 10px;
-    cursor: pointer;
-    transition: transform 0.3s ease;
-}
-
-.color:hover {
-    border: 1px solid rgb(155, 129, 91);
-}
-
-.pink {
-    background-color: #fae7ee;
-}
-
-.yellow {
-    background-color: #fcfade;
-}
-
-.green {
-    background-color: #e6f8e6;
-}
-
-.blue {
-    background-color: #e6f2f8;
-}
-
-.purple {
-    background-color: #e8e3f3;
-}
-
 .goal {
     display: flex;
     align-items: center;
@@ -114,4 +76,8 @@ input[type="radio"]:checked + .color {
 
 .hidden {
     display: none;
+}
+
+.user-challenges {
+    display: flex;
 }

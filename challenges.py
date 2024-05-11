@@ -1,11 +1,11 @@
 from db import db
 from sqlalchemy.sql import text
 
-def add_challenge(title, description, goal, goal_frequency, duration, start_date, end_date, color, user_id):
-    sql = text("INSERT INTO Challenges (title, description, goal, goal_frequency, duration, start_date, end_date, color, creator_id) "
-               "VALUES (:title, :description, :goal, :goal_frequency, :duration, :start_date, :end_date, :color, :creator_id)")
+def add_challenge(title, description, goal, goal_frequency, duration, start_date, end_date, user_id):
+    sql = text("INSERT INTO Challenges (title, description, goal, goal_frequency, duration, start_date, end_date, creator_id) "
+               "VALUES (:title, :description, :goal, :goal_frequency, :duration, :start_date, :end_date, :creator_id)")
     db.session.execute(sql, {"title": title, "description": description, "goal": goal, "goal_frequency": goal_frequency,
-                             "duration": duration, "start_date": start_date, "end_date": end_date, "color": color, "creator_id": user_id})
+                             "duration": duration, "start_date": start_date, "end_date": end_date, "creator_id": user_id})
     db.session.commit()
 
 def get_challenges(date):

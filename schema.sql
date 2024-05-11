@@ -32,7 +32,6 @@ CREATE TABLE Challenges (
     duration TEXT,
     start_date DATE,
     end_date DATE,
-    color TEXT,
     creator_id INTEGER REFERENCES Users(id)
 );
 
