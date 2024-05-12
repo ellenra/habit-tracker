@@ -44,7 +44,8 @@ def day():
     change_day = int(request.args.get("days", 0))
     date = (datetime.now() + timedelta(days=change_day)).strftime("%A, %d.%m.%Y")
     date_for_database = (datetime.now() + timedelta(days=change_day)).strftime("%Y-%m-%d")
-    habits.add_habits_for_the_day(user_id, date_for_database)
+    update_status = False
+    habits.add_habits_for_the_day(user_id, date_for_database, update_status)
 
     user_habits = habits.getdata(user_id, date_for_database)
     form_status = habits.get_form_status(date_for_database, user_id)
@@ -70,6 +71,7 @@ def manage_habits():
         user_id = session.get("user_id")
         user_habits = habits.gethabits(user_id)
         return render_template("habits.html", habits=user_habits)
+
     user_id = session.get("user_id")
     date_now = datetime.now().strftime("%Y-%m-%d")
     habits.delete_habits(user_id)
@@ -285,3 +287,36 @@ def challenge_status():
         challenges.update_challenge_status(user_id, challenge_id, date_for_database)
     return_to_same_day = int(request.form.get("day", 0))
     return redirect(f"/day?days={return_to_same_day}")
+
+@app.route("/custom_habit", methods=["GET", "POST"])
+def custom_habit():
+    if request.method == "POST":
+        user_id = session.get("user_id")
+        habit_name = request.form["custom_habit"]
+        tracking_type = request.form["tracking_type"]
+        habits.add_custom_habit(habit_name, user_id, tracking_type)
+
+        date = (datetime.now()).strftime("%A, %d.%m.%Y")
+        date_for_database = datetime.now().strftime("%Y-%m-%d")
+        habits.delete_data(user_id, date_for_database)
+        update_status = True
+        habits.add_habits_for_the_day(user_id, date_for_database, update_status)
+
+        user_habits = habits.getdata(user_id, date_for_database)
+        form_status = habits.get_form_status(date_for_database, user_id)
+        
+        users_challenges = challenges.get_user_challenges(user_id)
+        all_challenges = challenges.get_challenges(date_for_database)
+        users_challenges_data = [challenge for challenge in all_challenges if
+                                challenge[0] in [id[0] for id in users_challenges]]
+        user_challenge_statuses = challenges.get_user_challenge_data_for_day(user_id, date_for_database)
+
+        error = request.args.get("error")
+        return render_template("day.html", date=date,
+                            habits=user_habits,
+                            days=0,
+                            form_status=form_status,
+                            challenges=users_challenges_data,
+                            challenge_statuses=user_challenge_statuses,
+                            error=error)        
+    return render_template("custom_habit.html")

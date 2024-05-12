@@ -118,3 +118,7 @@ a:hover, .add-challenge-button:hover {
 ::-webkit-scrollbar-thumb:hover {
     background-color: #dbe0e7;
 }
+
+.custom-habit-text {
+    font-weight: bold;
+}

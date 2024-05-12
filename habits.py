@@ -3,18 +3,18 @@ from db import db
 
 def addhabits(sleep, workout, steps, study, journal, meditate, mood, user_id):
     habits = {
-        'sleep': sleep,
-        'workout': workout,
-        'steps': steps,
-        'study': study,
-        'journal': journal,
-        'meditate': meditate,
-        'mood': mood
+        "sleep": sleep,
+        "workout": workout,
+        "steps": steps,
+        "study": study,
+        "journal": journal,
+        "meditate": meditate,
+        "mood": mood
     }
 
     for name, value in habits.items():
-        if value == 'true':
-            if name in ('sleep', 'steps', 'mood'):
+        if value == "true":
+            if name in ("sleep", "steps", "mood"):
                 sql = text("INSERT INTO Habits (habit_name, user_id, track_number_value) "
                            "VALUES (:habit_name, :user_id, :track_number_value)")
                 db.session.execute(sql, {"habit_name":name, "user_id":user_id,
@@ -58,24 +58,33 @@ def get_form_status(date, user_id):
         return True
     return None
 
-def add_habits_for_the_day(user_id, date):
+def add_habits_for_the_day(user_id, date, update_status):
     sql = text("SELECT * FROM Usershabits WHERE user_id=:user_id AND date=:date")
     result = db.session.execute(sql, {"user_id":user_id, "date":date})
     existing_data = result.fetchone()
-    if existing_data is None:
+    if existing_data is None or update_status:
         sql_get_habits = text("SELECT habit_name, track_number_value "
                               "FROM Habits WHERE user_id=:user_id")
         data = db.session.execute(sql_get_habits, {"user_id":user_id})
         habits = data.fetchall()
+
+        existing_habits = []
+        sql_get_existing_habits = text("SELECT habit_name FROM UsersHabits "
+                                   "WHERE user_id=:user_id AND date=:date")
+        existing_data = db.session.execute(sql_get_existing_habits, {"user_id": user_id, "date": date})
+        for habit_name in existing_data.fetchall():
+            existing_habits.append(habit_name[0])
+
         for habit in habits:
             habit_name, track_number_value = habit
-            sql_add_habit = text("INSERT INTO UsersHabits "
-                                 "(user_id, habit_name, date, track_number_value) "
-                                 "VALUES (:user_id, :habit_name, :date, :track_number_value)")
-            db.session.execute(sql_add_habit, {"user_id": user_id,
-                                               "habit_name": habit_name,
-                                               "date": date,
-                                               "track_number_value": track_number_value})
+            if habit_name not in existing_habits:
+                sql_add_habit = text("INSERT INTO UsersHabits "
+                                    "(user_id, habit_name, date, track_number_value) "
+                                    "VALUES (:user_id, :habit_name, :date, :track_number_value)")
+                db.session.execute(sql_add_habit, {"user_id": user_id,
+                                                "habit_name": habit_name,
+                                                "date": date,
+                                                "track_number_value": track_number_value})
     db.session.commit()
 
 def update_habit_number_value(habit_id, value):
@@ -97,4 +106,17 @@ def update_habit_boolean_value(habit_id, info):
     db.session.execute(sql_update, {"new_value":new_value, "id":habit_id})
     sql_update_status = text("UPDATE Usershabits SET form_submitted = TRUE WHERE id=:id")
     db.session.execute(sql_update_status, {"id":habit_id})
+    db.session.commit()
+    
+def add_custom_habit(habit_name, user_id, tracking_type):
+    if tracking_type == "number":
+        sql = text("INSERT INTO Habits (habit_name, user_id, track_number_value) "
+                    "VALUES (:habit_name, :user_id, :track_number_value)")
+        db.session.execute(sql, {"habit_name":habit_name, "user_id":user_id,
+                                    "track_number_value":True})
+    else:
+        sql = text("INSERT INTO Habits (habit_name, user_id, track_number_value) "
+                    "VALUES (:habit_name, :user_id, :track_number_value)")
+        db.session.execute(sql, {"habit_name":habit_name, "user_id":user_id,
+                                    "track_number_value":False})
     db.session.commit()

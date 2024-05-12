@@ -1,0 +1,24 @@
+{% extends "day.html" %}
+{% block content %}
+
+<h2>Custom Habit</h2>
+<br>
+<form action="/custom_habit" method="POST">
+    <p class="custom-habit-text">What habit do you want to track?</p>
+    <input type="text" class="input" name="custom_habit" placeholder="Habit name">
+    <br>
+    <br>
+    <p class="custom-habit-text">Do you want to track this habit with a numerical value<br>or simply mark it as done/undone?</p>
+    Numerical value
+    <input type="radio" class="input" name="tracking_type" value="number">
+    <br>
+    Done/Undone
+    <input type="radio" class="input" name="tracking_type" value="checkbox">
+    <br>
+    <br>
+    <input type="hidden" name="csrf_token" value="{{ session.csrf_token}}">
+    <input type="submit" class="button" value="Add Habit">
+</form>
+<br>
+<a href="/day">Return</a>
+{% endblock %}

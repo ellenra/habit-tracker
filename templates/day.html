@@ -101,8 +101,11 @@
             </form>
         {% endif %}
         {% endblock %}
+        {% if request.path == '/day' %}
         </br>
-        <a href="/habits">Change habits you want to track</a>
+        <a href="/habits">Change habits you want to track</a></br>
+        <a href="/custom_habit">Add custom habit</a>
+        {% endif %}
     </div>
     {% if challenges %}
         <div class="container">
