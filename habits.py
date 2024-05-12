@@ -27,16 +27,10 @@ def addhabits(sleep, workout, steps, study, journal, meditate, mood, user_id):
     db.session.commit()
 
 def gethabits(user_id):
-    sql = text("SELECT * FROM Habits WHERE user_id=:user_id")
+    sql = text("SELECT id, habit_name FROM Habits WHERE user_id=:user_id")
     result = db.session.execute(sql, {"user_id": user_id})
-    data = result.fetchall()
-    habits = [row[1] for row in data]
+    habits = result.fetchall()
     return habits
-
-def delete_habits(user_id):
-    sql = text("DELETE FROM Habits WHERE user_id=:user_id")
-    db.session.execute(sql, {"user_id":user_id})
-    db.session.commit()
 
 def delete_data(user_id, date):
     sql = text("DELETE FROM Usershabits WHERE user_id=:user_id AND date>=:date")
@@ -119,4 +113,9 @@ def add_custom_habit(habit_name, user_id, tracking_type):
                     "VALUES (:habit_name, :user_id, :track_number_value)")
         db.session.execute(sql, {"habit_name":habit_name, "user_id":user_id,
                                     "track_number_value":False})
+    db.session.commit()
+
+def delete_habit(user_id, id):
+    sql = text("DELETE FROM Habits WHERE user_id=:user_id AND id=:id")
+    db.session.execute(sql, {"user_id":user_id, "id":id})
     db.session.commit()

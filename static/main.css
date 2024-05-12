@@ -122,3 +122,21 @@ a:hover, .add-challenge-button:hover {
 .custom-habit-text {
     font-weight: bold;
 }
+
+.habit {
+    position: relative;
+}
+
+.delete-button {
+    border: none;
+    background-color: transparent;
+    cursor: pointer;
+    position: absolute;
+    top: 0;
+    right: 0;
+    color: #c7c8c9;
+}
+
+.delete-button:hover {
+    color: #5e5d5d;
+}

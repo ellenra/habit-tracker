@@ -69,13 +69,9 @@ def day():
 def manage_habits():
     if request.method == "GET":
         user_id = session.get("user_id")
-        user_habits = habits.gethabits(user_id)
-        return render_template("habits.html", habits=user_habits)
+        return render_template("habits.html")
 
     user_id = session.get("user_id")
-    date_now = datetime.now().strftime("%Y-%m-%d")
-    habits.delete_habits(user_id)
-    habits.delete_data(user_id, date_now)
     sleep = request.form.get("sleep")
     workout = request.form.get("workout")
     steps = request.form.get("steps")
@@ -150,7 +146,8 @@ def month():
         user_habits = habits.getdata(user_id, date_for_database)
         habits_data.append(user_habits)
         current_day += timedelta(days=1)
-    users_habits = habits.gethabits(user_id)
+    get_users_habits = habits.gethabits(user_id)
+    users_habits = [habit[1] for habit in get_users_habits]
     first_day_in_database = first_day.date()
     last_day_in_database = last_day.date()
 
@@ -291,6 +288,7 @@ def challenge_status():
 @app.route("/custom_habit", methods=["GET", "POST"])
 def custom_habit():
     if request.method == "POST":
+        users.check_csrf()
         user_id = session.get("user_id")
         habit_name = request.form["custom_habit"]
         tracking_type = request.form["tracking_type"]
@@ -320,3 +318,39 @@ def custom_habit():
                             challenge_statuses=user_challenge_statuses,
                             error=error)        
     return render_template("custom_habit.html")
+
+@app.route("/delete_habits", methods=["GET", "POST"])
+def delete_habits():
+    if request.method == "GET":
+        user_id = session.get("user_id")
+        users_habits = habits.gethabits(user_id)
+        return render_template("delete_habits.html", habits=users_habits)
+    
+    user_id = session.get("user_id")
+    habits_to_delete = request.form.getlist("habit_id")
+    for habit_id in habits_to_delete:
+        habits.delete_habit(user_id, habit_id)
+        
+    date = (datetime.now()).strftime("%A, %d.%m.%Y")
+    date_for_database = datetime.now().strftime("%Y-%m-%d")
+    habits.delete_data(user_id, date_for_database)
+    update_status = True
+    habits.add_habits_for_the_day(user_id, date_for_database, update_status)
+
+    user_habits = habits.getdata(user_id, date_for_database)
+    form_status = habits.get_form_status(date_for_database, user_id)
+    
+    users_challenges = challenges.get_user_challenges(user_id)
+    all_challenges = challenges.get_challenges(date_for_database)
+    users_challenges_data = [challenge for challenge in all_challenges if
+                            challenge[0] in [id[0] for id in users_challenges]]
+    user_challenge_statuses = challenges.get_user_challenge_data_for_day(user_id, date_for_database)
+
+    error = request.args.get("error")
+    return render_template("day.html", date=date,
+                        habits=user_habits,
+                        days=0,
+                        form_status=form_status,
+                        challenges=users_challenges_data,
+                        challenge_statuses=user_challenge_statuses,
+                        error=error)  
