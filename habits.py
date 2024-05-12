@@ -1,29 +1,17 @@
 from sqlalchemy.sql import text
 from db import db
 
-def addhabits(sleep, workout, steps, study, journal, meditate, mood, user_id):
-    habits = {
-        "sleep": sleep,
-        "workout": workout,
-        "steps": steps,
-        "study": study,
-        "journal": journal,
-        "meditate": meditate,
-        "mood": mood
-    }
-
-    for name, value in habits.items():
-        if value == "true":
-            if name in ("sleep", "steps", "mood"):
-                sql = text("INSERT INTO Habits (habit_name, user_id, track_number_value) "
-                           "VALUES (:habit_name, :user_id, :track_number_value)")
-                db.session.execute(sql, {"habit_name":name, "user_id":user_id,
-                                         "track_number_value":True})
-            else:
-                sql = text("INSERT INTO Habits (habit_name, user_id, track_number_value) "
-                           "VALUES (:habit_name, :user_id, :track_number_value)")
-                db.session.execute(sql, {"habit_name":name, "user_id":user_id,
-                                         "track_number_value":False})
+def addhabits(habit, user_id):
+    if habit in ("sleep", "steps", "mood"):
+        sql = text("INSERT INTO Habits (habit_name, user_id, track_number_value) "
+                    "VALUES (:habit_name, :user_id, :track_number_value)")
+        db.session.execute(sql, {"habit_name":habit, "user_id":user_id,
+                                    "track_number_value":True})
+    else:
+        sql = text("INSERT INTO Habits (habit_name, user_id, track_number_value) "
+                    "VALUES (:habit_name, :user_id, :track_number_value)")
+        db.session.execute(sql, {"habit_name":habit, "user_id":user_id,
+                                    "track_number_value":False})
     db.session.commit()
 
 def gethabits(user_id):

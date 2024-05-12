@@ -11,7 +11,7 @@
     <body>
         <div class="container">
         <h2>Choose the habits you want to track!</h2>
-        <p>You can add custom habits later on!</p>
+        <p>You can add more habits later on!</p>
         <form action="/habits" method="POST">
             {% for habit in ['sleep', 'workout', 'steps', 'study', 'journal', 'meditate', 'mood'] %}
             <p>{{ habit.capitalize() }}<br>

@@ -72,14 +72,9 @@ def manage_habits():
         return render_template("habits.html")
 
     user_id = session.get("user_id")
-    sleep = request.form.get("sleep")
-    workout = request.form.get("workout")
-    steps = request.form.get("steps")
-    study = request.form.get("study")
-    journal = request.form.get("journal")
-    meditate = request.form.get("meditate")
-    mood = request.form.get("mood")
-    habits.addhabits(sleep, workout, steps, study, journal, meditate, mood, user_id)
+    for habit in ["sleep", "workout", "steps", "study", "journal", "meditate", "mood"]:
+        if habit in request.form:
+            habits.addhabits(habit, user_id)
     return redirect("/")
 
 @app.route("/habit_status", methods=["POST"])
