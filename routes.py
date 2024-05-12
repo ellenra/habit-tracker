@@ -99,7 +99,7 @@ def habit_status():
         if track_number_value.lower() == "true":
             value = request.form.get("number_" + str(habit_id))
             if int(value) > 100000 or int(value) < 0:
-                return redirect(url_for('day', days=return_to_same_day,
+                return redirect(url_for("day", days=return_to_same_day,
                                         error="Please enter correct values!"))
             habits.update_habit_number_value(habit_id, value)
         else:
@@ -219,6 +219,9 @@ def challenges_page():
             challenge = challenges.get_data_from_challenge(item)
             old_data.append(challenge)
         date_for_month_view = today.strftime("%A, %d.%m.%Y")
+
+        error = request.args.get("error")
+
         return render_template("challenges.html",
                                challenges=challenges_with_edited_dates,
                                user_joined=user_joined,
@@ -227,7 +230,8 @@ def challenges_page():
                                challenge_durations=challenge_durations,
                                old_challenges=old_challenges,
                                old_data=old_data,
-                               date=date_for_month_view)
+                               date=date_for_month_view,
+                               error=error)
 
     if request.method == "POST":
         users.check_csrf()
@@ -239,6 +243,14 @@ def challenges_page():
         duration = request.form.get("duration")
         start_date = request.form.get("start_date")
         end_date = request.form.get("end_date")
+
+        if len(title) > 30:
+            return redirect(url_for("challenges_page",
+                                    error="Could not create challenge! Error: Title is too long!"))
+        if len(description) > 200:
+            return redirect(url_for("challenges_page",
+                                    error="Could not create challenge! Error: Description is too long!"))
+
         challenges.add_challenge(title, description, goal, goal_frequency,
                                  duration, start_date, end_date, user_id)
         return redirect("/challenges")
@@ -292,6 +304,8 @@ def custom_habit():
         user_id = session.get("user_id")
         habit_name = request.form["custom_habit"]
         tracking_type = request.form["tracking_type"]
+        if len(habit_name) > 20:
+            return render_template("custom_habit.html", error="Habit name is too long!")
         habits.add_custom_habit(habit_name, user_id, tracking_type)
 
         date = (datetime.now()).strftime("%A, %d.%m.%Y")
@@ -302,7 +316,7 @@ def custom_habit():
 
         user_habits = habits.getdata(user_id, date_for_database)
         form_status = habits.get_form_status(date_for_database, user_id)
-        
+
         users_challenges = challenges.get_user_challenges(user_id)
         all_challenges = challenges.get_challenges(date_for_database)
         users_challenges_data = [challenge for challenge in all_challenges if
@@ -316,7 +330,7 @@ def custom_habit():
                             form_status=form_status,
                             challenges=users_challenges_data,
                             challenge_statuses=user_challenge_statuses,
-                            error=error)        
+                            error=error)
     return render_template("custom_habit.html")
 
 @app.route("/delete_habits", methods=["GET", "POST"])
@@ -325,12 +339,12 @@ def delete_habits():
         user_id = session.get("user_id")
         users_habits = habits.gethabits(user_id)
         return render_template("delete_habits.html", habits=users_habits)
-    
+
     user_id = session.get("user_id")
     habits_to_delete = request.form.getlist("habit_id")
     for habit_id in habits_to_delete:
         habits.delete_habit(user_id, habit_id)
-        
+
     date = (datetime.now()).strftime("%A, %d.%m.%Y")
     date_for_database = datetime.now().strftime("%Y-%m-%d")
     habits.delete_data(user_id, date_for_database)
@@ -339,7 +353,7 @@ def delete_habits():
 
     user_habits = habits.getdata(user_id, date_for_database)
     form_status = habits.get_form_status(date_for_database, user_id)
-    
+
     users_challenges = challenges.get_user_challenges(user_id)
     all_challenges = challenges.get_challenges(date_for_database)
     users_challenges_data = [challenge for challenge in all_challenges if
@@ -353,4 +367,4 @@ def delete_habits():
                         form_status=form_status,
                         challenges=users_challenges_data,
                         challenge_statuses=user_challenge_statuses,
-                        error=error)  
+                        error=error)

@@ -18,6 +18,11 @@
     </nav>
     <div id="listOfChallenges" class="challenges-and-button">
         <div class="container">
+            {% if error %}
+                <div class="errorNotification">
+                    <p>{{ error }}</p>
+                </div>
+            {% endif %}
             <h2>Join challenges!<h2>
             <div class="challenges scrollable-challenges">
                 {% for challenge in challenges %}

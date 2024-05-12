@@ -101,7 +101,7 @@ def update_habit_boolean_value(habit_id, info):
     sql_update_status = text("UPDATE Usershabits SET form_submitted = TRUE WHERE id=:id")
     db.session.execute(sql_update_status, {"id":habit_id})
     db.session.commit()
-    
+
 def add_custom_habit(habit_name, user_id, tracking_type):
     if tracking_type == "number":
         sql = text("INSERT INTO Habits (habit_name, user_id, track_number_value) "
@@ -115,7 +115,7 @@ def add_custom_habit(habit_name, user_id, tracking_type):
                                     "track_number_value":False})
     db.session.commit()
 
-def delete_habit(user_id, id):
+def delete_habit(user_id, habit_id):
     sql = text("DELETE FROM Habits WHERE user_id=:user_id AND id=:id")
-    db.session.execute(sql, {"user_id":user_id, "id":id})
+    db.session.execute(sql, {"user_id":user_id, "id":habit_id})
     db.session.commit()

@@ -3,6 +3,11 @@
 
 <h2>Custom Habit</h2>
 <br>
+{% if error %}
+    <div class="errorNotification">
+        <p>{{ error }}</p>
+    </div>
+{% endif %}
 <form action="/custom_habit" method="POST">
     <p class="custom-habit-text">What habit do you want to track?</p>
     <input type="text" class="input" name="custom_habit" placeholder="Habit name">
