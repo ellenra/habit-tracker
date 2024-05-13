@@ -20,6 +20,13 @@ def gethabits(user_id):
     habits = result.fetchall()
     return habits
 
+def get_months_habits(user_id, start, end):
+    sql = text("SELECT DISTINCT habit_name FROM UsersHabits WHERE user_id = :user_id "
+        "AND date>=:start AND date<=:end")
+    result = db.session.execute(sql, {"user_id": user_id, "start": start, "end": end})
+    habit_names = [row[0] for row in result]
+    return habit_names
+
 def delete_data(user_id, date):
     sql = text("DELETE FROM Usershabits WHERE user_id=:user_id AND date>=:date")
     db.session.execute(sql, {"user_id":user_id, "date":date})

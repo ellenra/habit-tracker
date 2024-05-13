@@ -141,8 +141,11 @@ def month():
         user_habits = habits.getdata(user_id, date_for_database)
         habits_data.append(user_habits)
         current_day += timedelta(days=1)
-    get_users_habits = habits.gethabits(user_id)
-    users_habits = [habit[1] for habit in get_users_habits]
+
+    start = first_day.strftime("%Y%m%d")
+    end = last_day.strftime("%Y%m%d")
+    users_habits = habits.get_months_habits(user_id, start, end)
+    print("FIRSTLAST", start, end, user_habits)
     first_day_in_database = first_day.date()
     last_day_in_database = last_day.date()
 
