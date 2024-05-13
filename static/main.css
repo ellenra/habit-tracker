@@ -91,6 +91,12 @@ a:hover, .add-challenge-button:hover {
 
 .errorNotification {
     color: red;
+    font-size: large;
+}
+
+.successNotification {
+    color: black;
+    font-size: large;
 }
 
 .true {

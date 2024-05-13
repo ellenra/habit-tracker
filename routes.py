@@ -216,6 +216,7 @@ def challenges_page():
         date_for_month_view = today.strftime("%A, %d.%m.%Y")
 
         error = request.args.get("error")
+        success = request.args.get("success")
 
         return render_template("challenges.html",
                                challenges=challenges_with_edited_dates,
@@ -226,7 +227,8 @@ def challenges_page():
                                old_challenges=old_challenges,
                                old_data=old_data,
                                date=date_for_month_view,
-                               error=error)
+                               error=error,
+                               success=success)
 
     if request.method == "POST":
         users.check_csrf()
@@ -248,7 +250,7 @@ def challenges_page():
 
         challenges.add_challenge(title, description, goal, goal_frequency,
                                  duration, start_date, end_date, user_id)
-        return redirect("/challenges")
+        return redirect(url_for("challenges_page", success="New challenge created!"))
 
 @app.route("/join_challenge", methods=["POST"])
 def join():

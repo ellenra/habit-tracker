@@ -2,13 +2,18 @@
 {% block title %}Challenges{% endblock %}
 {% block content %}
     <link rel="stylesheet" href="/static/challenges.css">
+    {% if error %}
+        <div class="errorNotification">
+            <p>{{ error }}</p>
+        </div>
+    {% endif %}
+    {% if success %}
+        <div class="successNotification">
+            <p>{{ success }}</p>
+        </div>
+    {% endif %}
     <div id="listOfChallenges" class="challenges-and-button">
         <div class="container">
-            {% if error %}
-                <div class="errorNotification">
-                    <p>{{ error }}</p>
-                </div>
-            {% endif %}
             <h2>Join challenges!<h2>
             <div class="challenges scrollable-challenges">
                 {% for challenge in challenges %}
@@ -41,12 +46,12 @@
             <h2>Create challenge!</h2>
             <p id="errorNotification" class="errorNotification"></p>
             <p>Title:<br>
-            <input id="title" type="text" class="input" name="title"></p>
+            <input id="title" type="text" class="input" name="title" required></p>
             <p>Description:<br>
-            <textarea id="description" type="text" class="input description-input" name="description"></textarea></p>
+            <textarea id="description" type="text" class="input description-input" name="description" required></textarea></p>
             <p>Goal:</p>
             <div>
-                <input type="text" class="input" name="goal" placeholder="(e.g. 10,000 steps, read 10 pages, no added sugar) ">
+                <input type="text" class="input" name="goal" placeholder="(e.g. 10,000 steps, read 10 pages, no added sugar) " required>
                 <select class="input" name="goal_frequency">
                     <option value="day">daily</option>
                     <option value="week">weekly</option>
@@ -66,9 +71,9 @@
                     <option value="9">a year</option>
                 </select></p>
             <p>Start date:<br>
-            <input type="date" class="input date-input" name="start_date"></p>
+            <input type="date" class="input date-input" name="start_date" required></p>
             <p>End date:<br>
-            <input type="date" class="input date-input" name="end_date"></p>
+            <input type="date" class="input date-input" name="end_date" required></p>
             <input type="hidden" name="csrf_token" value="{{ session.csrf_token}}">
             <input type="submit" class="button" value="Create">
         </form>
