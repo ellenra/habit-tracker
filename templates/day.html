@@ -10,6 +10,9 @@
 </head>
 <body>
     <nav class="sidebar">
+        <br>
+        <h1>Habit Tracker</h1>
+        <br>
         <a href="/" {% if request.path == "/day" or request.path == "/delete_habits" or request.path == "/custom_habit" or request.path.startswith("/edit_habits") %}class="true"{% endif %}>Home</a>
         <a href="/challenges" {% if request.path == "/challenges" %}class="true"{% endif %}>Challenges</a>
         <a href="/month?date={{ date }}" {% if request.path.startswith("/month") %}class="true"{% endif %}>Monthly View</a>
