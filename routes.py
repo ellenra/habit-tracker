@@ -9,7 +9,7 @@ import challenges
 @app.route("/")
 def index():
     if not session.get("user_id"):
-        return render_template("index.html")
+        return render_template("login.html")
     return redirect("/day")
 
 @app.route("/register", methods=["GET", "POST"])
@@ -29,7 +29,7 @@ def login():
     username = request.form["username"]
     password = request.form["password"]
     if not users.login(username, password):
-        return render_template("index.html", notification=True,
+        return render_template("login.html", notification=True,
                                message="Wrong username or password!")
     return redirect("/day")
 
@@ -316,7 +316,8 @@ def custom_habit():
         all_challenges = challenges.get_challenges(date_for_database)
         users_challenges_data = [challenge for challenge in all_challenges if
                                 challenge[0] in [id[0] for id in users_challenges]]
-        user_challenge_statuses = challenges.get_user_challenge_data_for_day(user_id, date_for_database)
+        user_challenge_statuses = challenges.get_user_challenge_data_for_day(user_id,
+                                                                             date_for_database)
 
         error = request.args.get("error")
         return render_template("day.html", date=date,

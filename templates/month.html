@@ -1,21 +1,7 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <title>Monthly View</title>
-    <link rel="stylesheet" href="/static/main.css">
+{% extends "day.html" %}
+{% block title %}Monthly View{% endblock %}
+{% block content %}
     <link rel="stylesheet" href="/static/month.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,300&display=swap" rel="stylesheet">
-</head>
-<body>
-    <nav class="sidebar">
-        <a href="/" {% if request.path == '/day' or request.path.startswith('/edit_habits') %}class="true"{% endif %}>Home</a>
-        <a href="/challenges" {% if request.path == '/challenges' %}class="true"{% endif %}>Challenges</a>
-        <a href="/month?date={{ date }}" {% if request.path.startswith('/month') %}class="true"{% endif %}>Monthly View</a>
-        <a href="/logout">Log out</a>
-    </nav>
     <div class="container">
         <div class="month-links">
             <a href="/month?month={{ previous_month }}">←</a>
@@ -40,7 +26,7 @@
                             {% set data_list = habit_data.get(key, []) %}
                             {% if data_list %}
                                 {% set data = data_list[0] %}
-                                {% if data[2] == 'mood' %}
+                                {% if data[2] == "mood" %}
                                     {% if data[5] == 1 %}
                                         <td>😞</td>
                                     {% elif data[5] == 2 %}
@@ -78,9 +64,7 @@
                     </tr>
                 {% endfor %}
             </tbody>
-            
         </table>
         <br />
     </div>
-</body>
-</html>
+{% endblock %}

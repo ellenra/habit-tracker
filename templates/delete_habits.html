@@ -1,17 +1,18 @@
 {% extends "day.html" %}
 {% block content %}
-
-<h2>Choose the habits you don't<br>want to track anymore!</h2>
-<br>
-<form action="/delete_habits" method="POST">
-    {% for habit in habits %}
-    <li class="habit">
-        {{ habit[1] }}
-        <input type="checkbox" class="input" name="habit_id" value="{{ habit[0] }}">
-    </li>
-    {% endfor %}
-    <input type="submit" class="button" value="Delete these habits">
-</form>
-<br>
-<a href="/day">Return</a>
+<div class="container">
+    <h2>Choose the habits you don't<br>want to track anymore!</h2>
+    <br>
+    <form action="/delete_habits" method="POST">
+        {% for habit in habits %}
+        <li class="habit">
+            {{ habit[1] }}
+            <input type="checkbox" class="input" name="habit_id" value="{{ habit[0] }}">
+        </li>
+        {% endfor %}
+        <input type="submit" class="button" value="Delete these habits">
+    </form>
+    <br>
+    <a href="/day">Return</a>
+</div>
 {% endblock %}

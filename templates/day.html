@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Daily View</title>
+    <title>{% block title %}Daily View{% endblock %}</title>
     <link rel="stylesheet" href="/static/main.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -10,137 +10,137 @@
 </head>
 <body>
     <nav class="sidebar">
-        <a href="/" {% if request.path == '/day' or request.path.startswith('/edit_habits') %}class="true"{% endif %}>Home</a>
-        <a href="/challenges" {% if request.path == '/challenges' %}class="true"{% endif %}>Challenges</a>
-        <a href="/month?date={{ date }}">Monthly View</a>
+        <a href="/" {% if request.path == "/day" or request.path == "/delete_habits" or request.path == "/custom_habit" or request.path.startswith("/edit_habits") %}class="true"{% endif %}>Home</a>
+        <a href="/challenges" {% if request.path == "/challenges" %}class="true"{% endif %}>Challenges</a>
+        <a href="/month?date={{ date }}" {% if request.path.startswith("/month") %}class="true"{% endif %}>Monthly View</a>
         <a href="/logout">Log out</a>
     </nav>
     <br/>
-    <div class="container">
-        {% block content %}
-        <div class="links">
-            <h2>{{ date }}</h2>
-            <a href="/day?days={{ days-1 }}">Previous Day</a>
-            <a href="/day?days={{ days+1 }}">Next Day</a>
-        </div>
-        {% if error %}
-        <div class="errorNotification">
-            <p>{{ error }}</p>
-        </div>
-        {% endif %}
-        {% if form_status == True %}
-        <ul>
-            {% for habit in habits %}
-            <li>
-                {% if habit.habit_name == 'mood' %}
-                    <span>
-                        {{ habit.habit_name }}:
-                        {% if habit.number_value == 1 %}
-                            <span>😞</span>
-                        {% elif habit.number_value == 2 %}
-                            <span>😕</span>
-                        {% elif habit.number_value == 3 %}
-                            <span>😌</span>
-                        {% elif habit.number_value == 4 %}
-                            <span>😊</span>
-                        {% else %}
-                            <span>😄</span>
-                        {% endif %}
-                    </span>
-                {% else %}
-                    {% if habit.number_value %}
-                        {% if habit.habit_name =='sleep' %}
-                        {{ habit.habit_name }}: {{ habit.number_value }}h
-                        {% else %}
-                        {{ habit.habit_name }}: {{ habit.number_value }} 
-                        {% endif %}
-                    {% else %}
-                        {% if habit.boolean_value %}
-                            {{ habit.habit_name }}: ✔️
-                        {% else %}
-                            {{ habit.habit_name }}: ✗
-                        {% endif %}
-                    {% endif %}
-                {% endif %}
-            </li>
-            {% endfor %}
-        </ul>
-        <a href="/edit_habits?date={{ date }}&days={{ days }}">Edit</a>
-        <br/>
-        {% else %}
-            <form action="/habit_status" method="POST">
-                <p id="errorNotification" class="errorNotification"></p>
+    {% block content %}
+        <div class="container">
+            <div class="links">
+                <h2>{{ date }}</h2>
+                <a href="/day?days={{ days-1 }}">Previous Day</a>
+                <a href="/day?days={{ days+1 }}">Next Day</a>
+            </div>
+            {% if error %}
+            <div class="errorNotification">
+                <p>{{ error }}</p>
+            </div>
+            {% endif %}
+            {% if form_status == True %}
+            <ul>
                 {% for habit in habits %}
                 <li>
-                    <div class="habit">
-                        {{ habit.habit_name }}
-                        <input type="hidden" name="track_value_{{ habit.id }}" value="{{ habit.track_number_value }}">
-                        <input type="hidden" name="habit_id_{{ habit.id }}" value="{{ habit.id }}">
-                        {% if habit.track_number_value %}
-                            {% if habit.habit_name == 'mood' %}
-                                <select id="mood" class="input" name="number_{{ habit.id }}">
-                                    <option value="5">5 - Excellent</option>
-                                    <option value="4">4 - Good</option>
-                                    <option value="3">3 - Okay</option>
-                                    <option value="2">2 - Bad</option>
-                                    <option value="1">1 - Awful</option>
-                                </select>
-                            {% elif habit.habit_name == 'sleep' %}
-                                <input type="number" id="sleepValue" class="input" name="number_{{ habit.id }}" placeholder="h">
+                    {% if habit.habit_name == "mood" %}
+                        <span>
+                            {{ habit.habit_name }}:
+                            {% if habit.number_value == 1 %}
+                                <span>😞</span>
+                            {% elif habit.number_value == 2 %}
+                                <span>😕</span>
+                            {% elif habit.number_value == 3 %}
+                                <span>😌</span>
+                            {% elif habit.number_value == 4 %}
+                                <span>😊</span>
                             {% else %}
-                                <input type="number" id="numberValue" class="input" name="number_{{ habit.id }}">                     
+                                <span>😄</span>
+                            {% endif %}
+                        </span>
+                    {% else %}
+                        {% if habit.number_value %}
+                            {% if habit.habit_name =="sleep" %}
+                            {{ habit.habit_name }}: {{ habit.number_value }}h
+                            {% else %}
+                            {{ habit.habit_name }}: {{ habit.number_value }} 
                             {% endif %}
                         {% else %}
-                            <input type="checkbox" class="input" name="checkbox_{{ habit.id }}" value="true">
+                            {% if habit.boolean_value %}
+                                {{ habit.habit_name }}: ✔️
+                            {% else %}
+                                {{ habit.habit_name }}: ✗
+                            {% endif %}
                         {% endif %}
-                    </div>
+                    {% endif %}
                 </li>
                 {% endfor %}
-                <input type="hidden" name="day" value="{{ days }}">
-                <input type="hidden" name="date" value="{{ date }}">
-                <input type="hidden" name="csrf_token" value="{{ session.csrf_token}}">
-                <input type="submit" id="submitButton" class="button" value="Done">
-            </form>
-        {% endif %}
-        <br>
-        <br>
-        <a href="/custom_habit">Add new habit</a><br>
-        <a href="/delete_habits">Edit habits you want to track</a>
-        {% endblock %}
-    </div>
-    {% if challenges %}
-        <div class="container">
-            <h2>Challenges!</h2>
-            <div class="scrollable-challenges">
-                {% for challenge in challenges %}
-                <li>
-                    <h3>{{ challenge[1] }}</h3>
-                    Goal: {{ challenge[3] }} {{ challenge[4] }}
-                    <ul>
-                        {% if challenge[0] not in challenge_statuses|map(attribute=0) %}
-                            <form action="/challenge_status" method="POST">
-                                <input type="hidden" name="date" value="{{ date }}">
-                                <input type="hidden" name="day" value="{{ days }}">
-                                Done: <input type="checkbox" class="input" name="challenge_id" value="{{ challenge.id }}" onchange="this.form.submit()">
-                            </form>
-                        {% else %}
-                            {% for status in challenge_statuses %}
-                            {% if status[0] == challenge[0] %}
+            </ul>
+            <a href="/edit_habits?date={{ date }}&days={{ days }}">Edit</a>
+            <br/>
+            {% else %}
+                <form action="/habit_status" method="POST">
+                    <p id="errorNotification" class="errorNotification"></p>
+                    {% for habit in habits %}
+                    <li>
+                        <div class="habit">
+                            {{ habit.habit_name }}
+                            <input type="hidden" name="track_value_{{ habit.id }}" value="{{ habit.track_number_value }}">
+                            <input type="hidden" name="habit_id_{{ habit.id }}" value="{{ habit.id }}">
+                            {% if habit.track_number_value %}
+                                {% if habit.habit_name == "mood" %}
+                                    <select id="mood" class="input" name="number_{{ habit.id }}">
+                                        <option value="5">5 - Excellent</option>
+                                        <option value="4">4 - Good</option>
+                                        <option value="3">3 - Okay</option>
+                                        <option value="2">2 - Bad</option>
+                                        <option value="1">1 - Awful</option>
+                                    </select>
+                                {% elif habit.habit_name == "sleep" %}
+                                    <input type="number" id="sleepValue" class="input" name="number_{{ habit.id }}" placeholder="h">
+                                {% else %}
+                                    <input type="number" id="numberValue" class="input" name="number_{{ habit.id }}">                     
+                                {% endif %}
+                            {% else %}
+                                <input type="checkbox" class="input" name="checkbox_{{ habit.id }}" value="true">
+                            {% endif %}
+                        </div>
+                    </li>
+                    {% endfor %}
+                    <input type="hidden" name="day" value="{{ days }}">
+                    <input type="hidden" name="date" value="{{ date }}">
+                    <input type="hidden" name="csrf_token" value="{{ session.csrf_token}}">
+                    <input type="submit" id="submitButton" class="button" value="Done">
+                </form>
+            {% endif %}
+            <br>
+            <br>
+            <a href="/custom_habit">Add new habit</a><br>
+            <a href="/delete_habits">Delete habits you don't want to track anymore</a>
+        </div>
+        {% if challenges %}
+            <div class="container">
+                <h2>Challenges!</h2>
+                <div class="scrollable-challenges">
+                    {% for challenge in challenges %}
+                    <li>
+                        <h3>{{ challenge[1] }}</h3>
+                        Goal: {{ challenge[3] }} {{ challenge[4] }}
+                        <ul>
+                            {% if challenge[0] not in challenge_statuses|map(attribute=0) %}
                                 <form action="/challenge_status" method="POST">
                                     <input type="hidden" name="date" value="{{ date }}">
                                     <input type="hidden" name="day" value="{{ days }}">
-                                    <input type="hidden" name="challenge_id" value="{{ challenge.id }}">
-                                    Done: <input type="checkbox" class="input" name="completed" value="true" {% if status[1] %} checked {% endif %} onchange="this.form.submit()">
+                                    Done: <input type="checkbox" class="input" name="challenge_id" value="{{ challenge.id }}" onchange="this.form.submit()">
                                 </form>
+                            {% else %}
+                                {% for status in challenge_statuses %}
+                                {% if status[0] == challenge[0] %}
+                                    <form action="/challenge_status" method="POST">
+                                        <input type="hidden" name="date" value="{{ date }}">
+                                        <input type="hidden" name="day" value="{{ days }}">
+                                        <input type="hidden" name="challenge_id" value="{{ challenge.id }}">
+                                        Done: <input type="checkbox" class="input" name="completed" value="true" {% if status[1] %} checked {% endif %} onchange="this.form.submit()">
+                                    </form>
+                                {% endif %}
+                                {% endfor %}
                             {% endif %}
-                            {% endfor %}
-                        {% endif %}
-                    </ul>
-                </li>
-                {% endfor %}
+                        </ul>
+                    </li>
+                    {% endfor %}
+                </div>
             </div>
-        </div>
-    {% endif %}
+        {% endif %}
+    {% endblock %}
     <script>
         document.getElementById("sleepValue").addEventListener("input", function() {
             var value = parseInt(this.value)

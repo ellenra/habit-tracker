@@ -10,16 +10,17 @@
     </head>
     <body>
         <div class="container">
-        <h2>Choose the habits you want to track!</h2>
-        <p>You can add more habits later on!</p>
-        <form action="/habits" method="POST">
-            {% for habit in ['sleep', 'workout', 'steps', 'study', 'journal', 'meditate', 'mood'] %}
-            <p>{{ habit.capitalize() }}<br>
-            <input type="checkbox" class="input" name="{{ habit }}">
-            {% endfor %}
-            <p>
-            <input type="submit" class="button" value="Done">
-        </form>
+            <h2>Let's get you started!</h2>
+            <h2>Choose the habits you want to track!</h2>
+            <p>You can add more habits later on!</p>
+            <form action="/habits" method="POST">
+                {% for habit in ["sleep", "workout", "steps", "study", "journal", "meditate", "mood"] %}
+                <p>{{ habit.capitalize() }}<br>
+                <input type="checkbox" class="input" name="{{ habit }}">
+                {% endfor %}
+                <p>
+                <input type="submit" class="button" value="Done">
+            </form>
         </div>
     </body>
 </html>
