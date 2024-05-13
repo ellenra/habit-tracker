@@ -45,3 +45,8 @@ Seuraa päivittäisiä elämäntapojasi ja osallistu haasteisiin!
    ```
    $ flask run
    ```
+## Kuvia sovelluksesta
+
+![Screenshot from 2024-05-13 17-29-54](https://github.com/ellenra/habit-tracker/assets/102103873/7c503d67-083f-42d1-815e-3dd0c74c1a09)
+![Screenshot from 2024-05-13 17-29-33](https://github.com/ellenra/habit-tracker/assets/102103873/d8c4559f-dbc2-450c-8bef-db130b2af076)
+![Screenshot from 2024-05-13 17-44-29](https://github.com/ellenra/habit-tracker/assets/102103873/b1678a98-6b35-473b-ae5e-baa1150cbe9e)
